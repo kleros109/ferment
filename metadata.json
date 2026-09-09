@@ -1,0 +1,6 @@
+{
+  "name": "Ferment",
+  "description": "Bulk fermentation calculator, DDT water temperature tool, and interactive tracker following The Sourdough Journey two-factor method by Tom Cucuzza.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

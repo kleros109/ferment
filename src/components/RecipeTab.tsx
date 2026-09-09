@@ -1,0 +1,279 @@
+import { useState, useMemo } from 'react';
+import {
+  Scale,
+  Sparkles,
+  Package,
+  Layers,
+  ArrowRight,
+  Info,
+  Check,
+  Flame,
+  Snowflake,
+  Waves
+} from 'lucide-react';
+import { calculateTrueHydration, calculateStartingVolumeFromFlour } from '../utils/fermentCalculations';
+import { VESSEL_RECOMMENDATIONS } from '../data/sourdoughData';
+
+interface RecipeTabProps {
+  onLoadRecipeIntoCalculator: (flourGrams: number, startingVolumeMl: number, initialMode?: 'two-factor' | 'ddt') => void;
+}
+
+export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
+  const [loafCount, setLoafCount] = useState<number>(1);
+  const [flour1Pct, setFlour1Pct] = useState<number>(90);
+  const [flour2Pct, setFlour2Pct] = useState<number>(10);
+  const [waterPct, setWaterPct] = useState<number>(75);
+  const [starterPct, setStarterPct] = useState<number>(20);
+  const [saltPct, setSaltPct] = useState<number>(2);
+
+  // Single loaf base flour weight
+  const baseFlourGrams = 500;
+  const totalFlourGrams = baseFlourGrams * loafCount;
+
+  const flour1Grams = Math.round((totalFlourGrams * flour1Pct) / 100);
+  const flour2Grams = Math.round((totalFlourGrams * flour2Pct) / 100);
+  const waterGrams = Math.round((totalFlourGrams * waterPct) / 100);
+  const starterGrams = Math.round((totalFlourGrams * starterPct) / 100);
+  const saltGrams = Math.round((totalFlourGrams * saltPct) / 100);
+  const totalDoughGrams = totalFlourGrams + waterGrams + starterGrams + saltGrams;
+
+  const startingVolumeMl = calculateStartingVolumeFromFlour(totalFlourGrams);
+
+  // Hydration calculations
+  const hydration = useMemo(() => {
+    return calculateTrueHydration(totalFlourGrams, waterGrams, starterGrams, 100);
+  }, [totalFlourGrams, waterGrams, starterGrams]);
+
+  // Find vessel recommendation
+  const vesselRec = useMemo(() => {
+    return (
+      VESSEL_RECOMMENDATIONS.find((v) => v.loaves === loafCount) || {
+        loaves: loafCount,
+        flourWeightGrams: totalFlourGrams,
+        startingVolumeMl,
+        warmVesselSize: `${(startingVolumeMl * 1.6 / 1000).toFixed(1)} L`,
+        coolVesselSize: `${(startingVolumeMl * 2.2 / 1000).toFixed(1)} L`,
+      }
+    );
+  }, [loafCount, totalFlourGrams, startingVolumeMl]);
+
+  return (
+    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+      {/* Header Banner */}
+      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-3">
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono border border-amber-500/30">
+          <Sparkles className="w-3.5 h-3.5" />
+          The Baseline Standard Recipe
+        </div>
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+          Standard Tartine Country Sourdough Formula
+        </h1>
+        <p className="text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+          The Sourdough Journey two-factor calculations are calibrated to Chad Robertson’s iconic 90/10 country loaf. Scale dough weights effortlessly and select the optimal fermentation vessel size.
+        </p>
+
+        {/* Loaf Selector Tabs */}
+        <div className="flex items-center gap-2 pt-2">
+          <span className="text-xs text-stone-400 mr-1">Batch Size:</span>
+          {[1, 2, 3, 4].map((count) => (
+            <button
+              key={count}
+              type="button"
+              onClick={() => setLoafCount(count)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
+                loafCount === count
+                  ? 'bg-amber-500 text-stone-950 shadow-sm'
+                  : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
+              }`}
+            >
+              {count} {count === 1 ? 'Loaf' : 'Loaves'} ({count * 500}g)
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Grid: Recipe Builder & Hydration */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        {/* Left: Recipe Ingredients Table */}
+        <div className="lg:col-span-7 bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-stone-200 pb-3">
+            <h2 className="font-bold text-stone-900 text-base flex items-center gap-2">
+              <Scale className="w-4 h-4 text-amber-600" />
+              Baker's Percentages & Grams
+            </h2>
+            <span className="text-xs font-mono text-stone-500">
+              Total Weight: <strong className="text-stone-900">{totalDoughGrams}g</strong>
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-stone-50 text-stone-600 font-semibold border-b border-stone-200">
+                <tr>
+                  <th className="p-2.5">Ingredient</th>
+                  <th className="p-2.5">Baker's %</th>
+                  <th className="p-2.5 text-right">Weight (g)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-stone-100 font-mono">
+                <tr>
+                  <td className="p-2.5 font-sans font-medium text-stone-900">
+                    Flour 1: Bread Flour (12.5%+ protein)
+                  </td>
+                  <td className="p-2.5 text-stone-600">{flour1Pct}%</td>
+                  <td className="p-2.5 text-right font-bold text-stone-900">{flour1Grams}g</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-sans font-medium text-stone-900">
+                    Flour 2: Whole Wheat Flour
+                  </td>
+                  <td className="p-2.5 text-stone-600">{flour2Pct}%</td>
+                  <td className="p-2.5 text-right font-bold text-stone-900">{flour2Grams}g</td>
+                </tr>
+                <tr className="bg-amber-50/40">
+                  <td className="p-2.5 font-sans font-bold text-amber-950">
+                    Total Flour Weight (Baseline)
+                  </td>
+                  <td className="p-2.5 font-bold text-amber-950">100%</td>
+                  <td className="p-2.5 text-right font-bold text-amber-950">{totalFlourGrams}g</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-sans font-medium text-stone-900">
+                    <div className="flex items-center justify-between gap-2">
+                      <span>Water</span>
+                      <button
+                        type="button"
+                        onClick={() => onLoadRecipeIntoCalculator(totalFlourGrams, startingVolumeMl, 'ddt')}
+                        className="inline-flex items-center gap-1 text-[11px] text-amber-800 bg-amber-100/70 hover:bg-amber-200/80 px-2 py-0.5 rounded font-sans font-semibold transition-colors"
+                        title="Calculate exact water temperature needed (DDT formula for hand mixing)"
+                      >
+                        <Waves className="w-3 h-3 text-amber-700" />
+                        Calculate Temp (DDT)
+                      </button>
+                    </div>
+                  </td>
+                  <td className="p-2.5 text-stone-600">{waterPct}%</td>
+                  <td className="p-2.5 text-right font-bold text-stone-900">{waterGrams}g</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-sans font-medium text-stone-900">
+                    Ripe Starter / Leaven (100% hydration)
+                  </td>
+                  <td className="p-2.5 text-stone-600">{starterPct}%</td>
+                  <td className="p-2.5 text-right font-bold text-stone-900">{starterGrams}g</td>
+                </tr>
+                <tr>
+                  <td className="p-2.5 font-sans font-medium text-stone-900">
+                    Fine Sea Salt / Pink Himalayan Salt
+                  </td>
+                  <td className="p-2.5 text-stone-600">{saltPct}%</td>
+                  <td className="p-2.5 text-right font-bold text-stone-900">{saltGrams}g</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* Shorthand starting volume banner */}
+          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div>
+              <span className="font-semibold text-stone-900 block">Mixed Dough Starting Volume:</span>
+              <span className="text-stone-500 font-mono text-[11px]">
+                {totalFlourGrams}g flour × 1.5 = <strong className="text-amber-800">{startingVolumeMl} mL</strong>
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => onLoadRecipeIntoCalculator(totalFlourGrams, startingVolumeMl)}
+              className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors shrink-0"
+            >
+              Use in Calculator
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Right: True Hydration Analyzer & Sourdough Journey Appendix 1 Vessel Selection */}
+        <div className="lg:col-span-5 space-y-6">
+          
+          {/* True Hydration Card */}
+          <div className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-stone-900 text-sm">
+                True Hydration Analyzer
+              </h3>
+              <span className="text-[11px] font-mono bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-bold">
+                {hydration.trueHydration}% True
+              </span>
+            </div>
+
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Standard recipes quote <strong className="text-stone-900">{waterPct}%</strong> baker's hydration, but 100% hydration starter adds equal parts flour and water ({hydration.starterFlour}g flour + {hydration.starterWater}g water).
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1 font-mono text-xs">
+              <div className="p-2.5 bg-stone-50 rounded-lg border border-stone-200">
+                <span className="text-[10px] text-stone-500 block uppercase">Baker's Hydration</span>
+                <span className="text-base font-bold text-stone-900">{hydration.bakersHydration}%</span>
+              </div>
+              <div className="p-2.5 bg-sky-50 rounded-lg border border-sky-200">
+                <span className="text-[10px] text-sky-700 block uppercase">True Hydration</span>
+                <span className="text-base font-bold text-sky-900">{hydration.trueHydration}%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Appendix 1: Selecting the Right Bulk Fermentation Vessel */}
+          <div className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-4">
+            <div>
+              <div className="flex items-center gap-1.5 text-xs font-mono text-amber-700 font-bold mb-1">
+                <Package className="w-3.5 h-3.5" />
+                Appendix 1 Guide
+              </div>
+              <h3 className="font-bold text-stone-900 text-base">
+                Fermentation Vessel Recommendation
+              </h3>
+              <p className="text-xs text-stone-500">
+                Size needed based on {loafCount} loaf batch ({totalFlourGrams}g flour)
+              </p>
+            </div>
+
+            <div className="space-y-2.5">
+              <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <Flame className="w-4 h-4 text-amber-700" />
+                  <div>
+                    <div className="font-semibold text-amber-950">Warm Fermentation (75–80°F)</div>
+                    <div className="text-[11px] text-amber-800">Target rise: 30% – 50%</div>
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-stone-900 text-sm">
+                  {vesselRec.warmVesselSize}
+                </div>
+              </div>
+
+              <div className="p-3 bg-sky-50/70 rounded-xl border border-sky-200 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  <Snowflake className="w-4 h-4 text-sky-700" />
+                  <div>
+                    <div className="font-semibold text-sky-950">Cool Fermentation (&lt;75°F)</div>
+                    <div className="text-[11px] text-sky-800">Target rise: 75% – 100%+</div>
+                  </div>
+                </div>
+                <div className="font-mono font-bold text-stone-900 text-sm">
+                  {vesselRec.coolVesselSize}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 text-[11px] text-stone-600 leading-relaxed">
+              <strong>DIY Calibration Trick: </strong>
+              Place your clear container on a digital scale. Put tape vertically on outside wall. Pour 100g of water and draw a mark. Continue adding 100g (100g water = 100 mL volume exactly) to create your custom calibrated vessel!
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+}
