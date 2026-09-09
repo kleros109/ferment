@@ -10,12 +10,12 @@ import {
   ArrowRight,
   Flame,
   Snowflake,
-  RotateCcw,
   SlidersHorizontal,
   Minus,
   Plus,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  RotateCcw
 } from 'lucide-react';
 import { TempUnit } from '../types';
 import {
@@ -23,6 +23,11 @@ import {
   fahrenheitToCelsius,
   celsiusToFahrenheit,
 } from '../utils/fermentCalculations';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Alert, AlertDescription } from './ui/alert';
 
 interface DDTCalculatorProps {
   tempUnit: TempUnit;
@@ -104,37 +109,37 @@ export function DDTCalculator({
 
   const statusStylesMap = {
     optimal: {
-      bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-100',
+      bg: 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800/80 text-emerald-950 dark:text-emerald-100',
       badge: 'bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700',
       icon: CheckCircle2,
       accent: 'text-emerald-700 dark:text-emerald-400',
     },
     warm: {
-      bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-100',
+      bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/80 text-amber-950 dark:text-amber-100',
       badge: 'bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200 border-amber-300 dark:border-amber-700',
       icon: Flame,
       accent: 'text-amber-700 dark:text-amber-400',
     },
     cool: {
-      bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800 text-sky-950 dark:text-sky-100',
+      bg: 'bg-sky-50 dark:bg-sky-950/40 border-sky-200 dark:border-sky-800/80 text-sky-950 dark:text-sky-100',
       badge: 'bg-sky-100 dark:bg-sky-900/60 text-sky-800 dark:text-sky-200 border-sky-300 dark:border-sky-700',
       icon: Snowflake,
       accent: 'text-sky-700 dark:text-sky-400',
     },
     ice_required: {
-      bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-950 dark:text-indigo-100',
+      bg: 'bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800/80 text-indigo-950 dark:text-indigo-100',
       badge: 'bg-indigo-100 dark:bg-indigo-900/60 text-indigo-800 dark:text-indigo-200 border-indigo-300 dark:border-indigo-700',
       icon: Snowflake,
       accent: 'text-indigo-700 dark:text-indigo-400',
     },
     hot_warning: {
-      bg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800 text-orange-950 dark:text-orange-100',
+      bg: 'bg-orange-50 dark:bg-orange-950/40 border-orange-200 dark:border-orange-800/80 text-orange-950 dark:text-orange-100',
       badge: 'bg-orange-100 dark:bg-orange-900/60 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-700',
       icon: AlertTriangle,
       accent: 'text-orange-700 dark:text-orange-400',
     },
     danger_hot: {
-      bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-950 dark:text-rose-100',
+      bg: 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800/80 text-rose-950 dark:text-rose-100',
       badge: 'bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-200 border-rose-300 dark:border-rose-700',
       icon: AlertTriangle,
       accent: 'text-rose-700 dark:text-rose-400',
@@ -145,15 +150,15 @@ export function DDTCalculator({
   const StatusIcon = statusStyles.icon;
 
   return (
-    <div className={`bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden ${className}`}>
+    <Card className={`overflow-hidden ${className}`}>
       {/* Card Header */}
-      <div className="p-5 sm:p-6 bg-gradient-to-br from-stone-900 to-stone-950 text-stone-100">
+      <div className="p-5 sm:p-6 bg-gradient-to-br from-stone-900 to-stone-950 text-stone-100 border-b border-stone-800">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono border border-amber-500/30">
+          <div className="space-y-1.5">
+            <Badge variant="amber" className="text-[11px] font-mono">
               <Thermometer className="w-3.5 h-3.5" />
               Desired Dough Temperature (DDT)
-            </div>
+            </Badge>
             <h2 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
               <Waves className="w-5 h-5 text-amber-400" />
               Implied Water Temperature Calculator
@@ -165,15 +170,15 @@ export function DDTCalculator({
           </div>
 
           <div className="flex items-center gap-2 self-start sm:self-center">
-            <div className="px-3 py-1.5 rounded-xl bg-stone-800 border border-stone-700 flex items-center gap-2 text-xs font-mono text-stone-300">
-              <Hand className="w-4 h-4 text-amber-400" />
-              <span>Hand Mixed: <strong className="text-white">0°{tempUnit} Friction</strong></span>
-            </div>
+            <Badge variant="secondary" className="gap-2 px-3 py-1 text-xs font-mono">
+              <Hand className="w-3.5 h-3.5 text-amber-400" />
+              <span>Hand Mixed: <strong>0°{tempUnit} Friction</strong></span>
+            </Badge>
           </div>
         </div>
       </div>
 
-      <div className="p-5 sm:p-6 space-y-6">
+      <CardContent className="p-5 sm:p-6 space-y-6">
         {/* Quick DDT Preset Buttons */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -192,9 +197,9 @@ export function DDTCalculator({
                   key={p.label}
                   type="button"
                   onClick={() => handleDdtChange(p.val)}
-                  className={`p-2.5 rounded-xl border text-left transition-all ${
+                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500 text-amber-950 dark:text-amber-200 font-bold shadow-sm ring-1 ring-amber-500/30'
+                      ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500 text-amber-950 dark:text-amber-200 font-bold shadow-xs ring-1 ring-amber-500/30'
                       : 'bg-stone-50/70 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'
                   }`}
                 >
@@ -220,37 +225,39 @@ export function DDTCalculator({
                 <Thermometer className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                 Desired Dough Temp (DDT)
               </label>
-              <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 font-semibold uppercase">Target</span>
+              <Badge variant="amber" className="text-[10px] py-0 px-1.5">Target</Badge>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleDdtChange(roundVal(activeDDT - step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Decrease target dough temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Minus className="w-4 h-4" />
-              </button>
+              </Button>
               <div className="relative flex-1">
-                <input
+                <Input
                   type="number"
                   step={step}
                   value={activeDDT}
                   onChange={(e) => handleDdtChange(parseFloat(e.target.value) || 0)}
-                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 px-2 py-2 rounded-xl border border-stone-300 dark:border-stone-700 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  className="h-10 text-center text-xl sm:text-2xl font-serif font-bold"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
                   °{tempUnit}
                 </span>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleDdtChange(roundVal(activeDDT + step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Increase target dough temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-stone-400">
               The internal temperature you want your mixed dough to achieve.
@@ -264,37 +271,39 @@ export function DDTCalculator({
                 <Thermometer className="w-3.5 h-3.5 text-stone-500 dark:text-stone-400" />
                 Air / Room Temp
               </label>
-              <span className="text-[10px] font-mono text-stone-500 dark:text-stone-400 uppercase">Kitchen</span>
+              <Badge variant="secondary" className="text-[10px] py-0 px-1.5">Kitchen</Badge>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleAirChange(roundVal(activeAir - step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Decrease room temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Minus className="w-4 h-4" />
-              </button>
+              </Button>
               <div className="relative flex-1">
-                <input
+                <Input
                   type="number"
                   step={step}
                   value={activeAir}
                   onChange={(e) => handleAirChange(parseFloat(e.target.value) || 0)}
-                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 px-2 py-2 rounded-xl border border-stone-300 dark:border-stone-700 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  className="h-10 text-center text-xl sm:text-2xl font-serif font-bold"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
                   °{tempUnit}
                 </span>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleAirChange(roundVal(activeAir + step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Increase room temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-stone-400">
               Current ambient temperature of your kitchen or proofing area.
@@ -311,41 +320,43 @@ export function DDTCalculator({
               <button
                 type="button"
                 onClick={() => handleFlourChange(activeAir)}
-                className="text-[10px] text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-semibold underline p-1 -m-1"
+                className="text-[10px] text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 font-semibold underline cursor-pointer"
                 title="Pantry flour is typically equal to room temperature"
               >
                 Match Air
               </button>
             </div>
             <div className="flex items-center gap-1.5">
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleFlourChange(roundVal(activeFlour - step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Decrease flour temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Minus className="w-4 h-4" />
-              </button>
+              </Button>
               <div className="relative flex-1">
-                <input
+                <Input
                   type="number"
                   step={step}
                   value={activeFlour}
                   onChange={(e) => handleFlourChange(parseFloat(e.target.value) || 0)}
-                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 dark:text-stone-100 bg-white dark:bg-stone-900 px-2 py-2 rounded-xl border border-stone-300 dark:border-stone-700 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                  className="h-10 text-center text-xl sm:text-2xl font-serif font-bold"
                 />
                 <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 dark:text-stone-500 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
                   °{tempUnit}
                 </span>
               </div>
-              <button
-                type="button"
+              <Button
+                variant="outline"
+                size="icon"
                 onClick={() => handleFlourChange(roundVal(activeFlour + step))}
-                className="w-10 h-10 rounded-xl bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-300 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                 aria-label="Increase flour temperature"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl"
               >
                 <Plus className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
             <p className="text-[11px] text-stone-500 dark:text-stone-400">
               Probe dry flour bag. If in pantry, it usually equals room temp.
@@ -366,14 +377,15 @@ export function DDTCalculator({
               <span>Include Sourdough Starter / Levain (4-Factor Formula)</span>
             </label>
 
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200 flex items-center gap-1 font-medium"
+              className="h-8 gap-1.5 text-xs text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-stone-200"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
-              {showAdvanced ? 'Hide Advanced Settings' : 'Advanced / Stand Mixer Tuning'}
-            </button>
+              <span>{showAdvanced ? 'Hide Advanced Settings' : 'Advanced / Stand Mixer Tuning'}</span>
+            </Button>
           </div>
 
           {/* Conditional Starter input */}
@@ -386,41 +398,44 @@ export function DDTCalculator({
                 </div>
               </div>
               <div className="flex items-center gap-1.5 w-full sm:w-auto">
-                <button
-                  type="button"
+                <Button
+                  variant="outline"
+                  size="icon-sm"
                   onClick={() => handleStarterChange(roundVal(activeStarter - step))}
-                  className="w-9 h-9 rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-200 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                   aria-label="Decrease Starter Temp"
+                  className="w-9 h-9"
                 >
                   <Minus className="w-3.5 h-3.5" />
-                </button>
+                </Button>
                 <div className="relative w-28 flex-1 sm:flex-none">
-                  <input
+                  <Input
                     type="number"
                     step={step}
                     value={activeStarter}
                     onChange={(e) => handleStarterChange(parseFloat(e.target.value) || 0)}
-                    className="w-full text-center text-base font-mono font-bold bg-white dark:bg-stone-800 px-2 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="h-9 text-center font-mono font-bold"
                   />
                   <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs pointer-events-none">
                     °{tempUnit}
                   </span>
                 </div>
-                <button
-                  type="button"
+                <Button
+                  variant="outline"
+                  size="icon-sm"
                   onClick={() => handleStarterChange(roundVal(activeStarter + step))}
-                  className="w-9 h-9 rounded-lg bg-white dark:bg-stone-800 border border-stone-300 dark:border-stone-700 flex items-center justify-center text-stone-700 dark:text-stone-200 active:scale-95 hover:bg-stone-100 dark:hover:bg-stone-700 shadow-sm shrink-0"
                   aria-label="Increase Starter Temp"
+                  className="w-9 h-9"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => handleStarterChange(activeAir)}
-                  className="px-2.5 py-2 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg text-xs shrink-0 font-medium active:scale-95"
+                  className="h-9 text-xs"
                 >
                   Match Room
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -436,7 +451,7 @@ export function DDTCalculator({
                   </span>
                 </div>
                 <div className="relative w-28">
-                  <input
+                  <Input
                     type="number"
                     step={tempUnit === 'F' ? 1 : 0.5}
                     value={activeFriction}
@@ -444,7 +459,7 @@ export function DDTCalculator({
                       const v = parseFloat(e.target.value) || 0;
                       setCustomFrictionF(tempUnit === 'F' ? v : Math.round((v * 9) / 5));
                     }}
-                    className="w-full text-sm font-mono font-bold bg-white dark:bg-stone-800 px-2.5 py-1.5 rounded-lg border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100"
+                    className="h-9 text-sm font-mono font-bold"
                   />
                   <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs">
                     °{tempUnit}
@@ -452,20 +467,21 @@ export function DDTCalculator({
                 </div>
               </div>
               {customFrictionF !== 0 && (
-                <button
-                  type="button"
+                <Button
+                  variant="link"
+                  size="sm"
                   onClick={() => setCustomFrictionF(0)}
-                  className="text-amber-700 dark:text-amber-400 hover:underline text-[11px] font-medium"
+                  className="text-amber-700 dark:text-amber-400 text-[11px] p-0 h-auto"
                 >
                   Reset to Hand Mixing (0° friction)
-                </button>
+                </Button>
               )}
             </div>
           )}
         </div>
 
         {/* Primary Output Banner: Implied Water Temperature */}
-        <div className={`p-6 rounded-2xl border transition-all ${statusStyles.bg} space-y-4 shadow-sm`}>
+        <div className={`p-5 sm:p-6 rounded-2xl border transition-all ${statusStyles.bg} space-y-4 shadow-sm`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
@@ -490,20 +506,21 @@ export function DDTCalculator({
 
             {/* Quick Action: Apply to Calculator */}
             {onApplyDDTToDoughTemp && (
-              <button
-                type="button"
+              <Button
+                size="lg"
+                variant="default"
                 onClick={() => onApplyDDTToDoughTemp(calculation.waterTempF >= 0 ? ddtF : 75)}
-                className="w-full sm:w-auto px-5 py-3 bg-stone-900 hover:bg-stone-800 dark:bg-amber-600 dark:hover:bg-amber-500 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 shrink-0 min-h-[48px]"
+                className="w-full sm:w-auto text-sm font-semibold gap-2 shadow-sm"
               >
-                <Sparkles className="w-4 h-4 text-amber-400 dark:text-white" />
-                Apply {activeDDT}°{tempUnit} as Dough Temp
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>Apply {activeDDT}°{tempUnit} as Dough Temp</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Button>
             )}
           </div>
 
           {/* Status Message & Warning */}
-          <div className="p-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm rounded-xl border border-stone-200/60 dark:border-stone-700/60 text-xs leading-relaxed text-stone-800 dark:text-stone-200">
+          <div className="p-3.5 bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm rounded-xl border border-stone-200/60 dark:border-stone-700/60 text-xs leading-relaxed text-stone-800 dark:text-stone-200 shadow-2xs">
             {calculation.statusMessage}
           </div>
 
@@ -521,7 +538,7 @@ export function DDTCalculator({
               </span>
             </button>
             {showBreakdown && (
-              <div className="mt-1.5 p-2.5 bg-white/70 dark:bg-stone-900/70 rounded-lg overflow-x-auto text-[11px] font-mono leading-relaxed text-stone-600 dark:text-stone-400 border border-stone-200/40 dark:border-stone-800">
+              <div className="mt-1.5 p-2.5 bg-white/80 dark:bg-stone-900/80 rounded-lg overflow-x-auto text-[11px] font-mono leading-relaxed text-stone-600 dark:text-stone-400 border border-stone-200/60 dark:border-stone-800">
                 <span>Implied Water Temp = ({calculation.factorsCount} × {activeDDT}°) - ({activeAir}° air + {activeFlour}° flour{includeStarter ? ` + ${activeStarter}° starter` : ''}{activeFriction ? ` + ${activeFriction}° friction` : ''})</span>
                 <br />
                 <span className="font-bold text-stone-900 dark:text-stone-100">
@@ -554,7 +571,7 @@ export function DDTCalculator({
             </p>
           </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

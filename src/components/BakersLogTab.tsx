@@ -10,9 +10,14 @@ import {
   Copy,
   Check,
   TrendingUp,
+  AlertCircle
 } from 'lucide-react';
 import { BakeSession, TempUnit } from '../types';
 import { fahrenheitToCelsius } from '../utils/fermentCalculations';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
 
 interface BakersLogTabProps {
   logs: BakeSession[];
@@ -26,7 +31,6 @@ interface BakersLogTabProps {
 
 export function BakersLogTab({
   logs,
-  onSelectSessionToEdit,
   onDeleteSession,
   onCalibrateNewBake,
   tempUnit,
@@ -116,14 +120,14 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-3">
-
-      {/* Logs List */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono border border-amber-500/30">
-              <ScrollText className="w-3.5 h-3.5" />
-              Appendices 2 & 3 Digital Worksheet
+            <div className="mb-2">
+              <Badge variant="amber" className="gap-1.5">
+                <ScrollText className="w-3.5 h-3.5" />
+                Appendices 2 & 3 Digital Worksheet
+              </Badge>
             </div>
             <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
               Baker's Notebook & Calibration Log
@@ -133,24 +137,28 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={onExportLogs}
-              className="px-3.5 py-2 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
+              className="gap-1.5 text-xs font-semibold"
               title="Download all bakes as JSON backup"
             >
               <Download className="w-3.5 h-3.5 text-amber-400" />
               Backup
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="px-3.5 py-2 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
+              className="gap-1.5 text-xs font-semibold"
               title="Restore bakes from a JSON backup"
             >
               <Upload className="w-3.5 h-3.5 text-amber-400" />
               Restore
-            </button>
+            </Button>
             <input
               ref={fileInputRef}
               type="file"
@@ -160,6 +168,13 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
             />
           </div>
         </div>
+
+        {importError && (
+          <Alert variant="destructive" className="py-2">
+            <AlertCircle className="w-4 h-4" />
+            <AlertDescription>{importError}</AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Calibration Insights */}
@@ -168,32 +183,32 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
       {/* Logs List */}
       <div className="space-y-4">
         {logs.length === 0 ? (
-          <div className="bg-white dark:bg-stone-900 rounded-2xl p-12 text-center border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
+          <Card className="p-12 text-center border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
             <ScrollText className="w-12 h-12 text-stone-300 dark:text-stone-600 mx-auto" />
-            <h3 className="font-bold text-stone-800 dark:text-stone-200 text-base">No Bakes Recorded Yet</h3>
-            <p className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
+            <CardTitle className="font-bold text-stone-800 dark:text-stone-200 text-base">No Bakes Recorded Yet</CardTitle>
+            <CardDescription className="text-xs text-stone-500 dark:text-stone-400 max-w-sm mx-auto">
               Complete your first bake in the Active Bake tab or duplicate Tom Cucuzza's sample worksheet to explore.
-            </p>
-          </div>
+            </CardDescription>
+          </Card>
         ) : (
           logs.map((session) => {
             const isExpanded = expandedId === session.id;
-            const outcomeColor =
+            const badgeVariant =
               session.crumbOutcome === 'perfect'
-                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
+                ? 'emerald'
                 : session.crumbOutcome === 'underproofed'
-                ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700'
-                : 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700';
+                ? 'amber'
+                : 'destructive';
 
             return (
-              <div
+              <Card
                 key={session.id}
-                className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden transition-all"
+                className="border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden transition-all"
               >
                 {/* Collapsed Header */}
                 <div
                   onClick={() => toggleExpand(session.id)}
-                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-stone-50/70 dark:hover:bg-stone-800/50"
+                  className="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer hover:bg-stone-50/70 dark:hover:bg-stone-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-amber-100/70 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 flex items-center justify-center font-bold text-sm">
@@ -203,9 +218,9 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                       <div className="flex items-center gap-2">
                         <h3 className="font-bold text-stone-900 dark:text-white text-base">{session.title}</h3>
                         {session.crumbOutcome && (
-                          <span className={`text-[10px] uppercase font-mono px-2 py-0.5 rounded-full border ${outcomeColor}`}>
+                          <Badge variant={badgeVariant} className="text-[10px] uppercase font-mono">
                             {session.crumbOutcome}
-                          </span>
+                          </Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-xs text-stone-500 dark:text-stone-400 font-mono mt-0.5">
@@ -221,23 +236,25 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                   </div>
 
                   <div className="flex items-center gap-2 self-start sm:self-auto mt-2 sm:mt-0">
-                    <button
+                    <Button
                       type="button"
+                      variant="amber"
+                      size="sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         onCalibrateNewBake(session);
                       }}
-                      className="px-3.5 py-2 bg-amber-500/10 hover:bg-amber-500/20 dark:bg-amber-500/20 dark:hover:bg-amber-500/30 text-amber-900 dark:text-amber-200 border border-amber-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
+                      className="gap-1.5 text-xs font-semibold"
                       title="Calibrate next bake based on these results"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400" />
+                      <Sparkles className="w-3.5 h-3.5" />
                       Calibrate Next Bake
-                    </button>
+                    </Button>
                     <div className="p-2 text-stone-400 dark:text-stone-500">
                       {isExpanded ? (
-                        <ChevronUp className="w-5 h-5 text-stone-500 dark:text-stone-400" />
+                        <ChevronUp className="w-5 h-5" />
                       ) : (
-                        <ChevronDown className="w-5 h-5 text-stone-500 dark:text-stone-400" />
+                        <ChevronDown className="w-5 h-5" />
                       )}
                     </div>
                   </div>
@@ -245,7 +262,7 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
 
                 {/* Expanded Full Worksheet View (Matching Appendix 2) */}
                 {isExpanded && (
-                  <div className="p-5 sm:p-6 border-t border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50 space-y-6">
+                  <CardContent className="p-5 sm:p-6 border-t border-stone-200 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-900/50 space-y-6">
                     {/* Ingredients Breakdown */}
                     <div>
                       <h4 className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-2">
@@ -324,22 +341,26 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                     )}
 
                     {/* Assessment & Calibration Notes */}
-                    <div className="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800 text-xs space-y-1.5">
-                      <div className="font-bold text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
-                        <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                        Crumb Assessment & Calibration Notes:
+                    <Alert variant="amber">
+                      <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+                      <div>
+                        <div className="font-bold text-amber-950 dark:text-amber-200 mb-1">
+                          Crumb Assessment & Calibration Notes:
+                        </div>
+                        <p className="text-stone-800 dark:text-stone-200 leading-relaxed font-sans text-xs">
+                          {session.crumbNotes || 'No specific notes recorded for this bake.'}
+                        </p>
                       </div>
-                      <p className="text-stone-800 dark:text-stone-200 leading-relaxed font-sans">
-                        {session.crumbNotes || 'No specific notes recorded for this bake.'}
-                      </p>
-                    </div>
+                    </Alert>
 
                     {/* Action Bar */}
                     <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-200/60 dark:border-stone-700/60">
-                      <button
+                      <Button
                         type="button"
+                        variant="outline"
+                        size="sm"
                         onClick={() => handleCopyMarkdown(session)}
-                        className="px-4 py-2.5 bg-white dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-200 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
+                        className="gap-1.5"
                       >
                         {copiedId === session.id ? (
                           <>
@@ -352,20 +373,22 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                             Copy Worksheet
                           </>
                         )}
-                      </button>
+                      </Button>
 
-                      <button
+                      <Button
                         type="button"
+                        variant="ghost"
+                        size="sm"
                         onClick={() => onDeleteSession(session.id)}
-                        className="px-3 py-2 text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 text-xs font-medium flex items-center gap-1.5 active:scale-95 min-h-[40px] rounded-lg"
+                        className="text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-50 dark:hover:bg-rose-950/30 gap-1.5"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         Delete Log
-                      </button>
+                      </Button>
                     </div>
-                  </div>
+                  </CardContent>
                 )}
-              </div>
+              </Card>
             );
           })
         )}
@@ -405,68 +428,72 @@ function CalibrationInsights({ logs, tempUnit }: CalibrationInsightsProps) {
   const tempRows = [...byTempF.entries()].sort((a, b) => a[0] - b[0]);
 
   return (
-    <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm p-5 sm:p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <TrendingUp className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-        <h3 className="font-bold text-stone-900 dark:text-white text-sm uppercase tracking-wider">Calibration Insights</h3>
-      </div>
+    <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
+      <CardHeader className="p-5 sm:p-6 pb-4">
+        <div className="flex items-center gap-2">
+          <TrendingUp className="w-4 h-4 text-amber-700 dark:text-amber-400" />
+          <CardTitle className="font-bold text-stone-900 dark:text-white text-sm uppercase tracking-wider">Calibration Insights</CardTitle>
+        </div>
+      </CardHeader>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        <div className="p-3 bg-stone-50 dark:bg-stone-800/80 rounded-xl border border-stone-200 dark:border-stone-700">
-          <div className="text-[10px] text-stone-400 dark:text-stone-500 uppercase font-mono">Completed Bakes</div>
-          <div className="text-lg font-bold text-stone-900 dark:text-stone-100 font-mono mt-0.5">{total}</div>
+      <CardContent className="p-5 sm:p-6 pt-0">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+          <div className="p-3 bg-stone-50 dark:bg-stone-800/80 rounded-xl border border-stone-200 dark:border-stone-700">
+            <div className="text-[10px] text-stone-400 dark:text-stone-500 uppercase font-mono">Completed Bakes</div>
+            <div className="text-lg font-bold text-stone-900 dark:text-stone-100 font-mono mt-0.5">{total}</div>
+          </div>
+          <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
+            <div className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-mono">Perfect</div>
+            <div className="text-lg font-bold text-emerald-800 dark:text-emerald-300 font-mono mt-0.5">{outcomeCount.perfect} ({perfectRate}%)</div>
+          </div>
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800">
+            <div className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-mono">Underproofed</div>
+            <div className="text-lg font-bold text-amber-800 dark:text-amber-300 font-mono mt-0.5">{outcomeCount.underproofed}</div>
+          </div>
+          <div className="p-3 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-200 dark:border-rose-800">
+            <div className="text-[10px] text-rose-600 dark:text-rose-400 uppercase font-mono">Overproofed</div>
+            <div className="text-lg font-bold text-rose-800 dark:text-rose-300 font-mono mt-0.5">{outcomeCount.overproofed}</div>
+          </div>
         </div>
-        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
-          <div className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-mono">Perfect</div>
-          <div className="text-lg font-bold text-emerald-800 dark:text-emerald-300 font-mono mt-0.5">{outcomeCount.perfect} ({perfectRate}%)</div>
-        </div>
-        <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800">
-          <div className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-mono">Underproofed</div>
-          <div className="text-lg font-bold text-amber-800 dark:text-amber-300 font-mono mt-0.5">{outcomeCount.underproofed}</div>
-        </div>
-        <div className="p-3 bg-rose-50 dark:bg-rose-950/30 rounded-xl border border-rose-200 dark:border-rose-800">
-          <div className="text-[10px] text-rose-600 dark:text-rose-400 uppercase font-mono">Overproofed</div>
-          <div className="text-lg font-bold text-rose-800 dark:text-rose-300 font-mono mt-0.5">{outcomeCount.overproofed}</div>
-        </div>
-      </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-left text-[10px] text-stone-400 dark:text-stone-500 uppercase font-mono border-b border-stone-200 dark:border-stone-700">
-              <th className="py-2 pr-3">Ending Temp</th>
-              <th className="py-2 pr-3">Bakes</th>
-              <th className="py-2 pr-3">Latest Target Rise</th>
-              <th className="py-2 pr-3">Latest Outcome</th>
-              <th className="py-2">Suggested Next</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tempRows.map(([tempF, row]) => {
-              const suggested =
-                row.latestOutcome === 'underproofed'
-                  ? row.latestTarget + 10
-                  : row.latestOutcome === 'overproofed'
-                  ? Math.max(20, row.latestTarget - 10)
-                  : row.latestTarget;
-              return (
-                <tr key={tempF} className="border-b border-stone-100 dark:border-stone-800 last:border-0">
-                  <td className="py-2 pr-3 font-mono font-bold text-stone-800 dark:text-stone-200">
-                    {tempUnit === 'F' ? `${tempF}°F` : `${fahrenheitToCelsius(tempF)}°C`}
-                  </td>
-                  <td className="py-2 pr-3 font-mono text-stone-600 dark:text-stone-400">{row.count}</td>
-                  <td className="py-2 pr-3 font-mono text-amber-700 dark:text-amber-400 font-bold">+{row.latestTarget}%</td>
-                  <td className="py-2 pr-3 font-mono text-stone-600 dark:text-stone-400">{row.latestOutcome || '—'}</td>
-                  <td className="py-2 font-mono font-bold text-emerald-700 dark:text-emerald-400">+{suggested}%</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-      <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-3 italic">
-        Suggested next target follows the ±10% calibration rule from your latest bake at each ending dough temperature. Same temp + same target = repeatable loaf.
-      </p>
-    </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-left text-[10px] text-stone-400 dark:text-stone-500 uppercase font-mono border-b border-stone-200 dark:border-stone-700">
+                <th className="py-2 pr-3">Ending Temp</th>
+                <th className="py-2 pr-3">Bakes</th>
+                <th className="py-2 pr-3">Latest Target Rise</th>
+                <th className="py-2 pr-3">Latest Outcome</th>
+                <th className="py-2">Suggested Next</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tempRows.map(([tempF, row]) => {
+                const suggested =
+                  row.latestOutcome === 'underproofed'
+                    ? row.latestTarget + 10
+                    : row.latestOutcome === 'overproofed'
+                    ? Math.max(20, row.latestTarget - 10)
+                    : row.latestTarget;
+                return (
+                  <tr key={tempF} className="border-b border-stone-100 dark:border-stone-800 last:border-0">
+                    <td className="py-2 pr-3 font-mono font-bold text-stone-800 dark:text-stone-200">
+                      {tempUnit === 'F' ? `${tempF}°F` : `${fahrenheitToCelsius(tempF)}°C`}
+                    </td>
+                    <td className="py-2 pr-3 font-mono text-stone-600 dark:text-stone-400">{row.count}</td>
+                    <td className="py-2 pr-3 font-mono text-amber-700 dark:text-amber-400 font-bold">+{row.latestTarget}%</td>
+                    <td className="py-2 pr-3 font-mono text-stone-600 dark:text-stone-400">{row.latestOutcome || '—'}</td>
+                    <td className="py-2 font-mono font-bold text-emerald-700 dark:text-emerald-400">+{suggested}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-3 italic">
+          Suggested next target follows the ±10% calibration rule from your latest bake at each ending dough temperature. Same temp + same target = repeatable loaf.
+        </p>
+      </CardContent>
+    </Card>
   );
 }

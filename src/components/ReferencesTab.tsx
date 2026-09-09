@@ -4,16 +4,17 @@ import {
   Youtube,
   Globe,
   Code,
-  Layers,
   Copy,
   Check,
   Play,
-  FileText,
   Sparkles,
   Server,
   Cloud
 } from 'lucide-react';
 import { REFERENCES_DATA } from '../data/sourdoughData';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 
 export function ReferencesTab() {
   const [copiedCode, setCopiedCode] = useState<boolean>(false);
@@ -91,9 +92,11 @@ page MainPage {
     <div className="space-y-8 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
       <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-3">
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono border border-amber-500/30">
-          <Sparkles className="w-3.5 h-3.5" />
-          Primary Sources & Framework Architecture
+        <div className="mb-2">
+          <Badge variant="amber" className="gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
+            Primary Sources & Framework Architecture
+          </Badge>
         </div>
         <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">
           References, Video Guides & Frameworks
@@ -124,9 +127,9 @@ page MainPage {
             const isEmbedActive = activeVideoEmbed === ref.youtubeId;
 
             return (
-              <div
+              <Card
                 key={ref.url}
-                className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden flex flex-col justify-between"
+                className="border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden flex flex-col justify-between"
               >
                 {/* Video Preview / Embed */}
                 <div className="relative aspect-video bg-stone-900 overflow-hidden">
@@ -146,24 +149,27 @@ page MainPage {
                         className="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-300"
                       />
                       <div className="absolute inset-0 bg-stone-950/40 flex items-center justify-center group-hover:bg-stone-950/25 transition-colors">
-                        <button
+                        <Button
                           type="button"
+                          size="icon"
                           onClick={() => setActiveVideoEmbed(ref.youtubeId || null)}
-                          className="w-12 h-12 rounded-full bg-red-600 group-hover:bg-red-500 text-white flex items-center justify-center shadow-lg transition-transform group-hover:scale-110"
+                          className="w-12 h-12 rounded-full bg-red-600 hover:bg-red-500 text-white shadow-lg transition-transform group-hover:scale-110"
                           aria-label="Play video"
                         >
                           <Play className="w-5 h-5 fill-current ml-0.5" />
-                        </button>
+                        </Button>
                       </div>
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-stone-900/80 backdrop-blur-sm text-[10px] font-mono text-amber-300 font-semibold">
-                        {ref.badge}
+                      <div className="absolute top-2 left-2">
+                        <Badge variant="amber" className="bg-stone-900/90 text-amber-300 border-stone-800 font-mono text-[10px]">
+                          {ref.badge}
+                        </Badge>
                       </div>
                     </div>
                   )}
                 </div>
 
                 {/* Content */}
-                <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                <CardContent className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div className="space-y-2">
                     <h3 className="font-bold text-stone-900 dark:text-white text-sm leading-snug">
                       {ref.title}
@@ -189,14 +195,14 @@ page MainPage {
                       href={ref.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                     >
                       Watch on YouTube
                       <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
@@ -219,22 +225,22 @@ page MainPage {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
+          <Card className="p-5 border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase">
                   Primary Research Portal
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                <Badge variant="outline" className="text-[11px] bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
                   thesourdoughjourney.com
-                </span>
+                </Badge>
               </div>
-              <h3 className="font-bold text-stone-900 dark:text-white text-base">
+              <CardTitle className="font-bold text-stone-900 dark:text-white text-base">
                 The Sourdough Journey Official Hub
-              </h3>
-              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+              </CardTitle>
+              <CardDescription className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
                 Tom Cucuzza’s official website containing comprehensive fermentation guides, experiments, sourdough starter troubleshooting, and free downloadable PDFs.
-              </p>
+              </CardDescription>
             </div>
             <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
               <a
@@ -249,30 +255,31 @@ page MainPage {
                 href="https://thesourdoughjourney.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-amber-600 dark:hover:bg-amber-500 text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
               >
-                Visit Site
-                <ExternalLink className="w-3 h-3" />
+                <Button variant="default" size="sm" className="gap-1.5 text-xs font-medium">
+                  Visit Site
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
               </a>
             </div>
-          </div>
+          </Card>
 
-          <div className="p-5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
+          <Card className="p-5 border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-sky-700 dark:text-sky-400 uppercase">
                   Full-Stack Architecture
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                <Badge variant="outline" className="text-[11px] bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-800">
                   wasp.sh
-                </span>
+                </Badge>
               </div>
-              <h3 className="font-bold text-stone-900 dark:text-white text-base">
+              <CardTitle className="font-bold text-stone-900 dark:text-white text-base">
                 Wasp TypeScript Framework
-              </h3>
-              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+              </CardTitle>
+              <CardDescription className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
                 Wasp is the modern, declarative full-stack TypeScript framework that combines React, Node.js, and Prisma into a cohesive system with built-in Auth, database migrations, and jobs.
-              </p>
+              </CardDescription>
             </div>
             <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
               <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">React 19 + Node.js</span>
@@ -280,13 +287,14 @@ page MainPage {
                 href="https://wasp.sh/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 bg-sky-700 hover:bg-sky-600 text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
               >
-                Learn Wasp
-                <ExternalLink className="w-3 h-3" />
+                <Button variant="default" size="sm" className="bg-sky-700 hover:bg-sky-600 text-white gap-1.5 text-xs font-medium">
+                  Learn Wasp
+                  <ExternalLink className="w-3 h-3" />
+                </Button>
               </a>
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -307,40 +315,44 @@ page MainPage {
         </div>
 
         {/* Vercel Guide Card */}
-        <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 text-stone-900 dark:text-white font-bold text-base">
-            <Cloud className="w-5 h-5 text-stone-900 dark:text-stone-100" />
-            Vercel Hosting Instructions (Included in this repo)
-          </div>
-          <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-            This application is already configured with a production-ready <code className="bg-stone-100 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-stone-900 dark:text-stone-100">vercel.json</code> file at the root. You can host this directly on Vercel with two simple options:
-          </p>
+        <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
+          <CardHeader className="p-6 pb-2">
+            <CardTitle className="flex items-center gap-2 text-stone-900 dark:text-white font-bold text-base">
+              <Cloud className="w-5 h-5 text-stone-900 dark:text-stone-100" />
+              Vercel Hosting Instructions (Included in this repo)
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 pt-0 space-y-3">
+            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+              This application is already configured with a production-ready <code className="bg-stone-100 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-stone-900 dark:text-stone-100">vercel.json</code> file at the root. You can host this directly on Vercel with two simple options:
+            </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block">Option A: Deploy via GitHub</span>
-              <p className="text-stone-600 dark:text-stone-300">
-                1. Push this repository to your GitHub account.<br />
-                2. Go to <strong>vercel.com/new</strong> and import the repo.<br />
-                3. Vercel auto-detects Vite and builds with <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">npm run build</code> into <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">dist/</code>.
-              </p>
-            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
+              <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
+                <span className="font-bold text-stone-900 dark:text-stone-100 block">Option A: Deploy via GitHub</span>
+                <p className="text-stone-600 dark:text-stone-300">
+                  1. Push this repository to your GitHub account.<br />
+                  2. Go to <strong>vercel.com/new</strong> and import the repo.<br />
+                  3. Vercel auto-detects Vite and builds with <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">npm run build</code> into <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">dist/</code>.
+                </p>
+              </div>
 
-            <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
-              <span className="font-bold text-stone-900 dark:text-stone-100 block">Option B: Deploy via Vercel CLI</span>
-              <p className="text-stone-600 dark:text-stone-300">
-                Run in your terminal:<br />
-                <code className="block bg-stone-900 text-stone-100 p-1.5 rounded font-mono mt-1 text-[11px]">
-                  npm i -g vercel<br />
-                  vercel --prod
-                </code>
-              </p>
+              <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
+                <span className="font-bold text-stone-900 dark:text-stone-100 block">Option B: Deploy via Vercel CLI</span>
+                <p className="text-stone-600 dark:text-stone-300">
+                  Run in your terminal:<br />
+                  <code className="block bg-stone-900 text-stone-100 p-1.5 rounded font-mono mt-1 text-[11px]">
+                    npm i -g vercel<br />
+                    vercel --prod
+                  </code>
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* Wasp Specification Code Box */}
-        <div className="bg-stone-900 text-stone-100 rounded-2xl border border-stone-800 shadow-md overflow-hidden">
+        <Card className="bg-stone-900 text-stone-100 border-stone-800 shadow-md overflow-hidden">
           <div className="p-4 bg-stone-950/80 border-b border-stone-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Server className="w-4 h-4 text-amber-400" />
@@ -348,10 +360,12 @@ page MainPage {
                 main.wasp (Wasp Declarative Spec for Ferment)
               </span>
             </div>
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
               onClick={handleCopyWasp}
-              className="px-3 py-1 bg-stone-800 hover:bg-stone-700 text-stone-200 rounded text-xs font-mono flex items-center gap-1.5 transition-colors"
+              className="gap-1.5 text-xs font-mono"
             >
               {copiedCode ? (
                 <>
@@ -364,7 +378,7 @@ page MainPage {
                   Copy main.wasp
                 </>
               )}
-            </button>
+            </Button>
           </div>
 
           <pre className="p-4 text-xs font-mono text-stone-300 overflow-x-auto max-h-72 overflow-y-auto leading-relaxed">
@@ -382,7 +396,7 @@ page MainPage {
               Wasp Docs <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
