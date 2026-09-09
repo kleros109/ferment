@@ -426,9 +426,6 @@ export default function App() {
             <div className="flex items-center justify-between pb-2 border-b border-stone-800">
               <div className="flex items-center gap-2">
                 <span className="font-serif text-lg font-bold text-amber-100">More Baking Tools</span>
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  TSJ 2024
-                </span>
               </div>
               <button
                 type="button"

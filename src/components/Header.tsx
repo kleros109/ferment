@@ -40,9 +40,6 @@ export function Header({
                 <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-amber-100">
                   Ferment
                 </span>
-                <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                  TSJ 2024
-                </span>
               </div>
               <p className="text-xs text-stone-400 hidden sm:block">
                 The Sourdough Journey • Temperature & % Rise System
