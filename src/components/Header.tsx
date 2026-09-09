@@ -1,5 +1,6 @@
-import { Flame, BookOpen, Clock, Activity, ScrollText, Sparkles, Scale, Waves } from 'lucide-react';
+import { Flame, BookOpen, Clock, Activity, ScrollText, Sparkles, Scale, Waves, Sun, Moon } from 'lucide-react';
 import { TempUnit } from '../types';
+import { SourdoughLoafLogo } from './SourdoughLoafLogo';
 
 interface HeaderProps {
   currentTab: string;
@@ -7,6 +8,8 @@ interface HeaderProps {
   tempUnit: TempUnit;
   setTempUnit: (unit: TempUnit) => void;
   hasActiveSession?: boolean;
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export function Header({
@@ -15,6 +18,8 @@ export function Header({
   tempUnit,
   setTempUnit,
   hasActiveSession,
+  theme,
+  setTheme,
 }: HeaderProps) {
   const tabs = [
     { id: 'calculator', label: 'Calculator', icon: Flame },
@@ -31,13 +36,11 @@ export function Header({
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16 sm:h-18">
           {/* Logo & Brand */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentTab('calculator')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-inner text-stone-950 font-bold font-serif text-xl ring-1 ring-amber-400/40">
-              F
-            </div>
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setCurrentTab('calculator')}>
+            <SourdoughLoafLogo className="w-10 h-10 ring-1 ring-amber-400/40 group-hover:border-amber-400/60 transition-colors" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-amber-100">
+                <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-amber-100 group-hover:text-amber-300 transition-colors">
                   Ferment
                 </span>
               </div>
@@ -47,7 +50,7 @@ export function Header({
             </div>
           </div>
 
-          {/* Controls: Temp Unit Switcher & Quick Action */}
+          {/* Controls: Theme Switcher, Temp Unit Switcher & Quick Action */}
           <div className="flex items-center gap-2 sm:gap-3">
             {hasActiveSession && (
               <button
@@ -59,6 +62,21 @@ export function Header({
                 <span>Live Bake</span>
               </button>
             )}
+
+            {/* Dark / Light Mode Toggle */}
+            <button
+              type="button"
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className="p-2 rounded-lg bg-stone-800/90 border border-stone-700/60 text-amber-400 hover:text-amber-300 hover:bg-stone-700/80 transition-all touch-manipulation shadow-inner"
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-amber-400" />
+              ) : (
+                <Moon className="w-4 h-4 text-stone-300" />
+              )}
+            </button>
 
             <div className="inline-flex rounded-lg p-1 bg-stone-800/90 border border-stone-700/60 shadow-inner">
               <button

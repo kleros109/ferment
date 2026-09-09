@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   * {
     -webkit-tap-highlight-color: transparent;
@@ -40,6 +42,10 @@ input[type='range'] {
   outline-offset: 4px;
   cursor: pointer;
   touch-action: pan-x;
+}
+.dark input[type='range'] {
+  background:
+    linear-gradient(to right, var(--color-amber-500) 0%, var(--color-amber-500) var(--fill, 50%), var(--color-stone-800) var(--fill, 50%));
 }
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;

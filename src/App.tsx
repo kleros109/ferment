@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Flame, Clock, Activity, ScrollText, BookOpen, Waves, MoreHorizontal, X, ChevronRight, Scale, Sparkles } from 'lucide-react';
+import { Flame, Clock, Activity, ScrollText, BookOpen, Waves, MoreHorizontal, X, ChevronRight, Scale, Sparkles, Sun, Moon } from 'lucide-react';
 import { Header } from './components/Header';
 import { CalculatorTab } from './components/CalculatorTab';
 import { ActiveTrackerTab } from './components/ActiveTrackerTab';
@@ -103,7 +103,48 @@ export default function App() {
     }
     return 'calculator';
   });
-  const [tempUnit, setTempUnit] = useState<TempUnit>('F');
+  const [tempUnit, setTempUnit] = useState<TempUnit>(() => {
+    try {
+      return localStorage.getItem('ferment_temp_unit') === 'C' ? 'C' : 'F';
+    } catch {
+      return 'F';
+    }
+  });
+
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem('ferment_theme');
+      if (saved === 'dark' || saved === 'light') return saved;
+      if (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    } catch {
+      // fallback
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ferment_theme', theme);
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    } catch {
+      // ignore
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('ferment_temp_unit', tempUnit);
+    } catch {
+      // ignore
+    }
+  }, [tempUnit]);
+
   const [isMoreOpen, setIsMoreOpen] = useState<boolean>(false);
   const [isMiniBannerDismissed, setIsMiniBannerDismissed] = useState<boolean>(false);
 
@@ -202,6 +243,35 @@ export default function App() {
     setCurrentTab('tracker');
   };
 
+  // Handler: Export full bake log as JSON download
+  const handleExportLogs = () => {
+    const payload = {
+      app: 'ferment',
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      tempUnit,
+      sessions: logs,
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ferment-bakes-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Handler: Import bake log from JSON file (merges by id, replaces same ids)
+  const handleImportLogs = (imported: BakeSession[]) => {
+    setLogs((prev) => {
+      const byId = new Map<string, BakeSession>(prev.map((s) => [s.id, s] as const));
+      for (const s of imported) {
+        byId.set(s.id, s);
+      }
+      return [...byId.values()].sort((a, b) => (a.date < b.date ? 1 : -1));
+    });
+  };
+
   // Handler: Save completed bake into logs
   const handleSaveToLog = (session: BakeSession) => {
     setLogs((prev) => [session, ...prev.filter((item) => item.id !== session.id)]);
@@ -253,7 +323,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100/70 text-stone-900 flex flex-col font-sans selection:bg-amber-200 selection:text-amber-950">
+    <div className="min-h-screen bg-stone-100/70 text-stone-900 dark:bg-stone-950 dark:text-stone-100 flex flex-col font-sans selection:bg-amber-200 selection:text-amber-950 transition-colors duration-150">
       {/* App Header & Navigation */}
       <Header
         currentTab={currentTab}
@@ -261,6 +331,8 @@ export default function App() {
         tempUnit={tempUnit}
         setTempUnit={setTempUnit}
         hasActiveSession={activeSession.status === 'in_progress'}
+        theme={theme}
+        setTheme={setTheme}
       />
 
       {/* Main Content Area */}
@@ -313,6 +385,8 @@ export default function App() {
             onDeleteSession={handleDeleteSession}
             onCalibrateNewBake={handleCalibrateNewBake}
             tempUnit={tempUnit}
+            onExportLogs={handleExportLogs}
+            onImportLogs={handleImportLogs}
           />
         )}
 
@@ -510,28 +584,51 @@ export default function App() {
               </button>
             </div>
 
-            {/* Quick Temp Unit in Sheet */}
-            <div className="p-3 bg-stone-800/60 rounded-2xl border border-stone-700/60 flex items-center justify-between text-xs">
-              <span className="text-stone-300 font-medium">Temperature Display Unit:</span>
-              <div className="inline-flex rounded-lg p-1 bg-stone-900 border border-stone-700">
+            {/* Quick Theme & Temp Unit in Sheet */}
+            <div className="space-y-2">
+              <div className="p-3 bg-stone-800/60 rounded-2xl border border-stone-700/60 flex items-center justify-between text-xs">
+                <span className="text-stone-300 font-medium">Appearance Theme:</span>
                 <button
                   type="button"
-                  onClick={() => setTempUnit('F')}
-                  className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
-                    tempUnit === 'F' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
-                  }`}
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-900 border border-stone-700 text-xs font-semibold text-amber-300"
                 >
-                  °F
+                  {theme === 'dark' ? (
+                    <>
+                      <Sun className="w-3.5 h-3.5 text-amber-400" />
+                      <span>Dark Theme</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="w-3.5 h-3.5 text-stone-300" />
+                      <span>Light Theme</span>
+                    </>
+                  )}
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setTempUnit('C')}
-                  className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
-                    tempUnit === 'C' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
-                  }`}
-                >
-                  °C
-                </button>
+              </div>
+
+              <div className="p-3 bg-stone-800/60 rounded-2xl border border-stone-700/60 flex items-center justify-between text-xs">
+                <span className="text-stone-300 font-medium">Temperature Display Unit:</span>
+                <div className="inline-flex rounded-lg p-1 bg-stone-900 border border-stone-700">
+                  <button
+                    type="button"
+                    onClick={() => setTempUnit('F')}
+                    className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
+                      tempUnit === 'F' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
+                    }`}
+                  >
+                    °F
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setTempUnit('C')}
+                    className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
+                      tempUnit === 'C' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
+                    }`}
+                  >
+                    °C
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -539,15 +636,15 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-stone-200/80 bg-stone-50 py-6 text-center text-xs text-stone-500 max-w-7xl w-full mx-auto px-4">
+      <footer className="border-t border-stone-200/80 dark:border-stone-800/80 bg-stone-50 dark:bg-stone-900/60 py-6 text-center text-xs text-stone-500 dark:text-stone-400 max-w-7xl w-full mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div>
-            <span className="font-semibold text-stone-700">Ferment</span> — Based on the research and methodology of{' '}
+            <span className="font-semibold text-stone-700 dark:text-stone-300">Ferment</span> — Based on the research and methodology of{' '}
             <a
               href="https://thesourdoughjourney.com/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-700 hover:underline font-medium"
+              className="text-amber-700 dark:text-amber-400 hover:underline font-medium"
             >
               The Sourdough Journey
             </a>{' '}
@@ -558,17 +655,17 @@ export default function App() {
               href="https://wasp.sh/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-stone-600 hover:text-stone-900 hover:underline"
+              className="text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200 hover:underline"
             >
               Wasp Framework
             </a>
             <span>•</span>
-            <span className="text-stone-600">Vercel Ready</span>
+            <span className="text-stone-600 dark:text-stone-400">Vercel Ready</span>
             <span>•</span>
             <button
               type="button"
               onClick={() => setCurrentTab('references')}
-              className="text-amber-700 hover:underline"
+              className="text-amber-700 dark:text-amber-400 hover:underline"
             >
               Video Guides
             </button>

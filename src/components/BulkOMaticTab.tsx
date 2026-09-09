@@ -42,7 +42,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
     if (score >= 8) {
       return {
         label: 'Ready for Bulk Cutoff!',
-        color: 'text-emerald-700 bg-emerald-50 border-emerald-200',
+        color: 'text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800',
         barColor: 'bg-emerald-500',
         message: 'Your dough exhibits the key hallmarks of strong fermentation. Cut off bulk fermentation and shape!',
       };
@@ -50,14 +50,14 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
     if (score >= 5) {
       return {
         label: 'Approaching Peak (Developing)',
-        color: 'text-amber-700 bg-amber-50 border-amber-200',
+        color: 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800',
         barColor: 'bg-amber-500',
         message: 'Dough has substantial gas build-up but may need a bit more relaxation and bubble expansion.',
       };
     }
     return {
       label: 'Early / Still Developing',
-      color: 'text-stone-700 bg-stone-100 border-stone-200',
+      color: 'text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800/80 border-stone-200 dark:border-stone-700',
       barColor: 'bg-stone-500',
       message: 'Gluten structure is still settling or yeast gas production is just getting started. Keep warm and wait.',
     };
@@ -139,8 +139,8 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
           onClick={() => setActiveCategory('all')}
           className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'all'
-              ? 'bg-stone-900 text-white shadow-sm'
-              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
+              ? 'bg-stone-900 dark:bg-amber-600 text-white shadow-sm'
+              : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700'
           }`}
         >
           All 9 Criteria
@@ -151,7 +151,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
           className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'visual'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
+              : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700'
           }`}
         >
           <Eye className="w-3.5 h-3.5" />
@@ -163,7 +163,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
           className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'tactile'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
+              : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700'
           }`}
         >
           <Hand className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
           className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'aroma'
               ? 'bg-amber-600 text-white shadow-sm'
-              : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
+              : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 border border-stone-200 dark:border-stone-700'
           }`}
         >
           <Wind className="w-3.5 h-3.5" />
@@ -193,16 +193,16 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
               onClick={() => toggleCheck(criterion.id)}
               className={`p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm relative active:scale-[0.99] touch-manipulation select-none ${
                 isChecked
-                  ? 'bg-amber-50/70 border-amber-500 shadow-md ring-1 ring-amber-400/40'
-                  : 'bg-white border-stone-200 hover:border-stone-300'
+                  ? 'bg-amber-50/70 dark:bg-amber-950/40 border-amber-500 shadow-md ring-1 ring-amber-400/40'
+                  : 'bg-white dark:bg-stone-800/90 border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600'
               }`}
             >
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2.5">
-                  <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-700 font-mono text-xs font-bold flex items-center justify-center border border-stone-200">
+                  <span className="w-6 h-6 rounded-full bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-200 font-mono text-xs font-bold flex items-center justify-center border border-stone-200 dark:border-stone-600">
                     {index + 1}
                   </span>
-                  <h3 className="font-bold text-stone-900 text-sm">{criterion.title}</h3>
+                  <h3 className="font-bold text-stone-900 dark:text-stone-100 text-sm">{criterion.title}</h3>
                 </div>
                 <button
                   type="button"
@@ -210,25 +210,25 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
                   aria-label="Toggle criteria"
                 >
                   {isChecked ? (
-                    <CheckCircle2 className="w-6 h-6 text-amber-600 fill-amber-100" />
+                    <CheckCircle2 className="w-6 h-6 text-amber-600 fill-amber-100 dark:fill-amber-900/60" />
                   ) : (
-                    <Circle className="w-6 h-6 text-stone-300" />
+                    <Circle className="w-6 h-6 text-stone-300 dark:text-stone-600" />
                   )}
                 </button>
               </div>
 
-              <p className="text-xs text-stone-600 mb-3 leading-relaxed">
+              <p className="text-xs text-stone-600 dark:text-stone-300 mb-3 leading-relaxed">
                 {criterion.description}
               </p>
 
-              <div className="p-3 bg-stone-50 rounded-xl border border-stone-200/80 text-[11px] text-stone-700 space-y-1">
-                <span className="font-semibold text-stone-900 block">How to check:</span>
+              <div className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-xl border border-stone-200/80 dark:border-stone-700 text-[11px] text-stone-700 dark:text-stone-300 space-y-1">
+                <span className="font-semibold text-stone-900 dark:text-stone-100 block">How to check:</span>
                 <p className="leading-normal">{criterion.instruction}</p>
               </div>
 
-              <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-stone-400">
+              <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-stone-400 dark:text-stone-500">
                 <span className="capitalize">{criterion.category} Cue</span>
-                <span className="uppercase px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-medium">
+                <span className="uppercase px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 font-medium">
                   {criterion.importance}
                 </span>
               </div>
@@ -239,7 +239,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
 
       {/* Action CTA */}
       {score >= 8 && onProceedToShape && (
-        <div className="p-5 bg-emerald-900 text-emerald-100 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+        <div className="p-5 bg-emerald-900 dark:bg-emerald-950 text-emerald-100 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg border border-emerald-800">
           <div>
             <div className="font-bold text-base text-white">Sensory Criteria Confirmed!</div>
             <div className="text-xs text-emerald-200">

@@ -106,14 +106,14 @@ page MainPage {
       {/* Section 1: YouTube Masterclass Videos */}
       <div className="space-y-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-red-100 text-red-700">
+          <div className="p-2 rounded-xl bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300">
             <Youtube className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-stone-900">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-white">
               The Sourdough Journey YouTube Video Masterclasses
             </h2>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Direct links to Tom Cucuzza's three seminal videos on bulk fermentation, crumb reading, and sensory cues
             </p>
           </div>
@@ -126,7 +126,7 @@ page MainPage {
             return (
               <div
                 key={ref.url}
-                className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden flex flex-col justify-between"
+                className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden flex flex-col justify-between"
               >
                 {/* Video Preview / Embed */}
                 <div className="relative aspect-video bg-stone-900 overflow-hidden">
@@ -165,15 +165,15 @@ page MainPage {
                 {/* Content */}
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div className="space-y-2">
-                    <h3 className="font-bold text-stone-900 text-sm leading-snug">
+                    <h3 className="font-bold text-stone-900 dark:text-white text-sm leading-snug">
                       {ref.title}
                     </h3>
-                    <p className="text-xs text-stone-600 leading-relaxed">
+                    <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
                       {ref.description}
                     </p>
 
                     {ref.bulletPoints && (
-                      <ul className="space-y-1 text-[11px] text-stone-600 list-disc list-inside">
+                      <ul className="space-y-1 text-[11px] text-stone-600 dark:text-stone-400 list-disc list-inside">
                         {ref.bulletPoints.map((pt, i) => (
                           <li key={i}>{pt}</li>
                         ))}
@@ -181,15 +181,15 @@ page MainPage {
                     )}
                   </div>
 
-                  <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
-                    <span className="text-[11px] text-stone-400 font-mono">
+                  <div className="pt-2 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                    <span className="text-[11px] text-stone-400 dark:text-stone-500 font-mono">
                       By {ref.author}
                     </span>
                     <a
                       href={ref.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 hover:text-red-700"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300"
                     >
                       Watch on YouTube
                       <ExternalLink className="w-3 h-3" />
@@ -205,43 +205,43 @@ page MainPage {
       {/* Section 2: Web Links & Community Resources */}
       <div className="space-y-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-amber-100 text-amber-800">
+          <div className="p-2 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300">
             <Globe className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-stone-900">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-white">
               Web Resources & Guides
             </h2>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Official publications, printable worksheets, and research papers
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-sm space-y-3 flex flex-col justify-between">
+          <div className="p-5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-amber-700 uppercase">
+                <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-400 uppercase">
                   Primary Research Portal
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                   thesourdoughjourney.com
                 </span>
               </div>
-              <h3 className="font-bold text-stone-900 text-base">
+              <h3 className="font-bold text-stone-900 dark:text-white text-base">
                 The Sourdough Journey Official Hub
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
+              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
                 Tom Cucuzza’s official website containing comprehensive fermentation guides, experiments, sourdough starter troubleshooting, and free downloadable PDFs.
               </p>
             </div>
-            <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
+            <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
               <a
                 href="https://thesourdoughjourney.com/donate"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-amber-700 hover:underline font-medium"
+                className="text-xs text-amber-700 dark:text-amber-400 hover:underline font-medium"
               >
                 Support TSJ Research (Donate)
               </a>
@@ -249,7 +249,7 @@ page MainPage {
                 href="https://thesourdoughjourney.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
+                className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 dark:bg-amber-600 dark:hover:bg-amber-500 text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 transition-colors"
               >
                 Visit Site
                 <ExternalLink className="w-3 h-3" />
@@ -257,25 +257,25 @@ page MainPage {
             </div>
           </div>
 
-          <div className="p-5 bg-white rounded-2xl border border-stone-200 shadow-sm space-y-3 flex flex-col justify-between">
+          <div className="p-5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm space-y-3 flex flex-col justify-between">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-mono font-bold text-sky-700 uppercase">
+                <span className="text-xs font-mono font-bold text-sky-700 dark:text-sky-400 uppercase">
                   Full-Stack Architecture
                 </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-sky-50 text-sky-800 border border-sky-200">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
                   wasp.sh
                 </span>
               </div>
-              <h3 className="font-bold text-stone-900 text-base">
+              <h3 className="font-bold text-stone-900 dark:text-white text-base">
                 Wasp TypeScript Framework
               </h3>
-              <p className="text-xs text-stone-600 leading-relaxed">
+              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
                 Wasp is the modern, declarative full-stack TypeScript framework that combines React, Node.js, and Prisma into a cohesive system with built-in Auth, database migrations, and jobs.
               </p>
             </div>
-            <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-              <span className="text-xs text-stone-500 font-mono">React 19 + Node.js</span>
+            <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+              <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">React 19 + Node.js</span>
               <a
                 href="https://wasp.sh/"
                 target="_blank"
@@ -293,42 +293,42 @@ page MainPage {
       {/* Section 3: Wasp Architecture Specification & Vercel Hosting Guide */}
       <div className="space-y-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-stone-100 text-stone-800">
+          <div className="p-2 rounded-xl bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200">
             <Code className="w-5 h-5" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-stone-900">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-white">
               Wasp Framework Specification & Vercel Deployment
             </h2>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Deploy to Vercel with zero-configuration or export as a full Wasp application
             </p>
           </div>
         </div>
 
         {/* Vercel Guide Card */}
-        <div className="bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-3">
-          <div className="flex items-center gap-2 text-stone-900 font-bold text-base">
-            <Cloud className="w-5 h-5 text-stone-900" />
+        <div className="bg-white dark:bg-stone-900 rounded-2xl p-6 border border-stone-200 dark:border-stone-800 shadow-sm space-y-3">
+          <div className="flex items-center gap-2 text-stone-900 dark:text-white font-bold text-base">
+            <Cloud className="w-5 h-5 text-stone-900 dark:text-stone-100" />
             Vercel Hosting Instructions (Included in this repo)
           </div>
-          <p className="text-xs text-stone-600 leading-relaxed">
-            This application is already configured with a production-ready <code className="bg-stone-100 px-1 py-0.5 rounded font-mono text-stone-900">vercel.json</code> file at the root. You can host this directly on Vercel with two simple options:
+          <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+            This application is already configured with a production-ready <code className="bg-stone-100 dark:bg-stone-800 px-1 py-0.5 rounded font-mono text-stone-900 dark:text-stone-100">vercel.json</code> file at the root. You can host this directly on Vercel with two simple options:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs">
-            <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <span className="font-bold text-stone-900 block">Option A: Deploy via GitHub</span>
-              <p className="text-stone-600">
+            <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
+              <span className="font-bold text-stone-900 dark:text-stone-100 block">Option A: Deploy via GitHub</span>
+              <p className="text-stone-600 dark:text-stone-300">
                 1. Push this repository to your GitHub account.<br />
                 2. Go to <strong>vercel.com/new</strong> and import the repo.<br />
-                3. Vercel auto-detects Vite and builds with <code className="bg-stone-200/70 px-1 rounded font-mono">npm run build</code> into <code className="bg-stone-200/70 px-1 rounded font-mono">dist/</code>.
+                3. Vercel auto-detects Vite and builds with <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">npm run build</code> into <code className="bg-stone-200/70 dark:bg-stone-700 px-1 rounded font-mono">dist/</code>.
               </p>
             </div>
 
-            <div className="p-3 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <span className="font-bold text-stone-900 block">Option B: Deploy via Vercel CLI</span>
-              <p className="text-stone-600">
+            <div className="p-3 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1.5">
+              <span className="font-bold text-stone-900 dark:text-stone-100 block">Option B: Deploy via Vercel CLI</span>
+              <p className="text-stone-600 dark:text-stone-300">
                 Run in your terminal:<br />
                 <code className="block bg-stone-900 text-stone-100 p-1.5 rounded font-mono mt-1 text-[11px]">
                   npm i -g vercel<br />
