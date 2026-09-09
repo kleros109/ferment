@@ -120,7 +120,7 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="mb-2">
@@ -129,11 +129,11 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                 Appendices 2 & 3 Digital Worksheet
               </Badge>
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mt-1">
               Baker's Notebook & Calibration Log
             </h1>
-            <p className="text-stone-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Once you dial in the optimal percentage rise for a recipe and dough temperature, it <span className="text-amber-300 font-semibold italic">never changes</span>. Keep meticulous records to make every bake repeatable.
+            <p className="text-stone-600 dark:text-stone-300 text-xs sm:text-sm max-w-xl leading-relaxed">
+              Once you dial in the optimal percentage rise for a recipe and dough temperature, it <span className="text-amber-700 dark:text-amber-300 font-semibold italic">never changes</span>. Keep meticulous records to make every bake repeatable.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">

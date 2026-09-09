@@ -91,17 +91,17 @@ page MainPage {
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-3">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-3">
         <div className="mb-2">
           <Badge variant="amber" className="gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             Primary Sources & Framework Architecture
           </Badge>
         </div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
           References, Video Guides & Frameworks
         </h1>
-        <p className="text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+        <p className="text-stone-600 dark:text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
           Comprehensive companion materials from Tom Cucuzza’s research at <strong>The Sourdough Journey</strong>, direct YouTube masterclasses, and deployment specifications for <strong>Vercel</strong> and the <strong>Wasp TypeScript Framework</strong>.
         </p>
       </div>

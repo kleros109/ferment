@@ -152,7 +152,7 @@ export function ActiveTrackerTab({
       </CardHeader>
 
       <CardContent className="p-4 sm:p-5 pt-0 space-y-3">
-        <div className="py-2.5 sm:py-3 text-center bg-stone-900 dark:bg-stone-950 rounded-xl text-amber-400 font-mono text-3xl sm:text-4xl font-extrabold tracking-widest shadow-inner border border-stone-800">
+        <div className="py-2.5 sm:py-3 text-center bg-amber-50/70 dark:bg-stone-950 rounded-xl text-amber-900 dark:text-amber-400 font-mono text-3xl sm:text-4xl font-extrabold tracking-widest shadow-inner border border-amber-200/80 dark:border-stone-800">
           {formatTimer(timerSeconds)}
         </div>
 
@@ -217,37 +217,37 @@ export function ActiveTrackerTab({
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Active Session Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-5 sm:p-6 border border-stone-800 shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-800 pb-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-5 sm:p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-stone-100 dark:border-stone-800 pb-4">
           <div>
             <div className="mb-2">
               <Badge variant="emerald" pulseDot={true}>
                 Live Baking Session
               </Badge>
             </div>
-            <h1 className="font-serif text-2xl font-bold text-white">
+            <h1 className="font-serif text-2xl font-bold text-stone-900 dark:text-white">
               {session.title || 'Sourdough Country Loaf'}
             </h1>
-            <p className="text-xs text-stone-400 mt-1">
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
               Started {session.date} at {session.mixTime} • {session.totalFlourWeight}g flour • {session.calculatedHydration}% Hydration
             </p>
           </div>
 
           {/* Quick Stats Pill */}
-          <div className="grid grid-cols-3 divide-x divide-stone-700/80 bg-stone-800/80 p-2 sm:p-2.5 rounded-xl border border-stone-700/60 font-mono text-center text-xs">
+          <div className="grid grid-cols-3 divide-x divide-stone-200 dark:divide-stone-700/80 bg-stone-50 dark:bg-stone-800/80 p-2 sm:p-2.5 rounded-xl border border-stone-200/80 dark:border-stone-700/60 font-mono text-center text-xs">
             <div className="px-2">
-              <div className="text-[10px] text-stone-400 uppercase tracking-tight">Dough Temp</div>
-              <div className="text-amber-400 font-bold text-sm sm:text-base">
+              <div className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-tight">Dough Temp</div>
+              <div className="text-amber-700 dark:text-amber-400 font-bold text-sm sm:text-base">
                 {tempUnit === 'F' ? `${session.endingDoughTemp}°F` : `${fahrenheitToCelsius(session.endingDoughTemp)}°C`}
               </div>
             </div>
             <div className="px-2">
-              <div className="text-[10px] text-stone-400 uppercase tracking-tight">Target Rise</div>
-              <div className="text-amber-400 font-bold text-sm sm:text-base">+{session.targetRisePercent}%</div>
+              <div className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-tight">Target Rise</div>
+              <div className="text-amber-700 dark:text-amber-400 font-bold text-sm sm:text-base">+{session.targetRisePercent}%</div>
             </div>
             <div className="px-2">
-              <div className="text-[10px] text-stone-400 uppercase tracking-tight">Target Cutoff</div>
-              <div className="text-emerald-400 font-bold text-sm sm:text-base">{session.targetVolumeMl} mL</div>
+              <div className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-tight">Target Cutoff</div>
+              <div className="text-emerald-700 dark:text-emerald-400 font-bold text-sm sm:text-base">{session.targetVolumeMl} mL</div>
             </div>
           </div>
         </div>
@@ -271,10 +271,10 @@ export function ActiveTrackerTab({
               <select
                 value={currentStep}
                 onChange={(e) => setCurrentStep(Number(e.target.value))}
-                className="w-full appearance-none bg-stone-800 text-amber-300 font-bold text-xs py-2 px-3 rounded-xl border border-stone-700 text-center pr-7 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-400 min-h-[38px]"
+                className="w-full appearance-none bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-amber-300 font-bold text-xs py-2 px-3 rounded-xl border border-stone-200 dark:border-stone-700 text-center pr-7 cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-400 min-h-[38px]"
               >
                 {stepsList.map((st) => (
-                  <option key={st.num} value={st.num} className="bg-stone-900 text-white">
+                  <option key={st.num} value={st.num} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
                     Step {st.num}: {st.title}
                   </option>
                 ))}
@@ -295,7 +295,7 @@ export function ActiveTrackerTab({
             </Button>
           </div>
           {/* Visual Step Progress Bar */}
-          <Progress value={(currentStep / 9) * 100} className="h-1.5 bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
+          <Progress value={(currentStep / 9) * 100} className="h-1.5 bg-stone-100 dark:bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
         </div>
 
         {/* Desktop 9-Step Horizontal Progress Ribbon */}
@@ -311,15 +311,15 @@ export function ActiveTrackerTab({
                   onClick={() => setCurrentStep(st.num)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     isCurrent
-                      ? 'bg-amber-500 text-stone-950 font-bold shadow-md ring-1 ring-amber-400'
+                      ? 'bg-amber-500 text-stone-950 font-bold shadow-xs ring-1 ring-amber-400'
                       : isPast
-                      ? 'bg-stone-800 text-stone-300 hover:bg-stone-700'
-                      : 'text-stone-500 hover:text-stone-300'
+                      ? 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                      : 'text-stone-400 dark:text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
                   }`}
                 >
                   <span
                     className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono ${
-                      isCurrent ? 'bg-stone-950 text-amber-400' : isPast ? 'bg-emerald-600 text-white' : 'bg-stone-800 text-stone-400'
+                      isCurrent ? 'bg-stone-950 text-amber-400' : isPast ? 'bg-emerald-600 text-white' : 'bg-stone-200 dark:bg-stone-800 text-stone-600 dark:text-stone-400'
                     }`}
                   >
                     {isPast ? '✓' : st.num}
@@ -1188,17 +1188,17 @@ export function ActiveTrackerTab({
               </CardHeader>
 
               <CardContent className="p-6 pt-0 space-y-5">
-                <div className="p-5 bg-gradient-to-r from-stone-900 to-stone-800 text-stone-100 rounded-2xl border border-stone-700 space-y-4 shadow-lg">
-                  <div className="text-xs font-mono text-amber-400 uppercase tracking-wide">
+                <div className="p-5 bg-gradient-to-br from-amber-50/60 via-stone-50 to-amber-100/30 dark:from-stone-900 dark:to-stone-800 text-stone-900 dark:text-stone-100 rounded-2xl border border-amber-200/80 dark:border-stone-700 space-y-4 shadow-sm dark:shadow-lg">
+                  <div className="text-xs font-mono text-amber-800 dark:text-amber-400 uppercase tracking-wide">
                     Recommended Calibration for Next Bake
                   </div>
 
                   {session.crumbOutcome === 'underproofed' && (
                     <div className="space-y-2">
-                      <div className="text-2xl font-black text-amber-400 font-mono">
+                      <div className="text-2xl font-black text-amber-700 dark:text-amber-400 font-mono">
                         Target Rise: {session.targetRisePercent}% → {session.targetRisePercent + 10}% (+10%)
                       </div>
-                      <p className="text-xs text-stone-300">
+                      <p className="text-xs text-stone-600 dark:text-stone-300">
                         Because this loaf was slightly underproofed, increase target rise by 10% next time at {tempUnit === 'F' ? `${session.endingDoughTemp}°F` : `${fahrenheitToCelsius(session.endingDoughTemp)}°C`}. Keep all flour, water, and starter amounts identical!
                       </p>
                     </div>
@@ -1206,10 +1206,10 @@ export function ActiveTrackerTab({
 
                   {session.crumbOutcome === 'overproofed' && (
                     <div className="space-y-2">
-                      <div className="text-2xl font-black text-rose-400 font-mono">
+                      <div className="text-2xl font-black text-rose-700 dark:text-rose-400 font-mono">
                         Target Rise: {session.targetRisePercent}% → {Math.max(20, session.targetRisePercent - 10)}% (-10%)
                       </div>
-                      <p className="text-xs text-stone-300">
+                      <p className="text-xs text-stone-600 dark:text-stone-300">
                         Because this loaf was slightly overproofed, decrease target rise by 10% next time at {tempUnit === 'F' ? `${session.endingDoughTemp}°F` : `${fahrenheitToCelsius(session.endingDoughTemp)}°C`}, and verify your refrigerator reaches 39°F (4°C).
                       </p>
                     </div>
@@ -1217,17 +1217,17 @@ export function ActiveTrackerTab({
 
                   {session.crumbOutcome === 'perfect' && (
                     <div className="space-y-2">
-                      <div className="text-2xl font-black text-emerald-400 font-mono">
+                      <div className="text-2xl font-black text-emerald-700 dark:text-emerald-400 font-mono">
                         Target Rise: {session.targetRisePercent}% (Locked In!)
                       </div>
-                      <p className="text-xs text-stone-300">
+                      <p className="text-xs text-stone-600 dark:text-stone-300">
                         Congratulations! You have found your fermentation sweet spot for this recipe and temperature. Once locked in, it never changes.
                       </p>
                     </div>
                   )}
 
                   {!session.crumbOutcome && (
-                    <p className="text-xs text-stone-400">
+                    <p className="text-xs text-stone-500 dark:text-stone-400">
                       Select a crumb outcome in Step 8 to receive automatic calibration advice.
                     </p>
                   )}

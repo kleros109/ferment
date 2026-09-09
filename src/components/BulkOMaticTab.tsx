@@ -73,7 +73,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12">
       {/* Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="mb-2">
@@ -82,10 +82,10 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
                 The Sourdough Journey Sensory System
               </Badge>
             </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
               The Bulk-O-Matic Guide: 9 Criteria for Perfect Dough
             </h1>
-            <p className="text-stone-300 text-xs sm:text-sm max-w-xl mt-1 leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-300 text-xs sm:text-sm max-w-xl mt-1 leading-relaxed">
               When bulk fermenting warm dough (76°F–80°F / 24°C–27°C+), rise happens fast. Use Tom Cucuzza’s 9 visual, tactile, and aromatic sensory markers to confirm readiness before shaping.
             </p>
           </div>
@@ -108,14 +108,14 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
         </div>
 
         {/* Live Scorecard Meter */}
-        <div className="p-4 bg-stone-800/90 rounded-xl border border-stone-700/80 space-y-3">
+        <div className="p-4 bg-stone-50 dark:bg-stone-800/90 rounded-xl border border-stone-200 dark:border-stone-700/80 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div>
-              <div className="text-[10px] sm:text-xs font-semibold text-stone-400 uppercase tracking-wider">
+              <div className="text-[10px] sm:text-xs font-semibold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                 Sensory Readiness Score
               </div>
-              <div className="font-mono text-xl sm:text-2xl font-bold text-amber-400 mt-0.5">
-                {score} <span className="text-xs sm:text-sm font-normal text-stone-400">/ {total} Criteria Met</span>
+              <div className="font-mono text-xl sm:text-2xl font-bold text-amber-700 dark:text-amber-400 mt-0.5">
+                {score} <span className="text-xs sm:text-sm font-normal text-stone-500 dark:text-stone-400">/ {total} Criteria Met</span>
               </div>
             </div>
             {score > 0 && (
@@ -124,7 +124,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setCheckedIds([])}
-                className="text-stone-300 hover:text-white border-stone-700 bg-stone-800 hover:bg-stone-700 text-xs gap-1.5"
+                className="text-stone-700 hover:text-stone-900 dark:text-stone-300 dark:hover:text-white border-stone-300 dark:border-stone-700 bg-white hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700 text-xs gap-1.5"
               >
                 <RotateCcw className="w-3 h-3" />
                 Reset
@@ -132,7 +132,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
             )}
           </div>
 
-          <Progress value={scorePercent} className="h-3 bg-stone-900 border border-stone-700" indicatorClassName={status.indicatorColor} />
+          <Progress value={scorePercent} className="h-3 bg-stone-200 dark:bg-stone-900 border border-stone-300 dark:border-stone-700" indicatorClassName={status.indicatorColor} />
 
           <div className={`p-3 rounded-lg border text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-2 ${status.color}`}>
             <span>{status.message}</span>

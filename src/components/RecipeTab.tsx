@@ -60,23 +60,23 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header Banner */}
-      <div className="bg-stone-900 text-stone-100 rounded-2xl p-6 border border-stone-800 shadow-xl space-y-4">
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-4">
         <div className="mb-2">
           <Badge variant="amber" className="gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             The Baseline Standard Recipe
           </Badge>
         </div>
-        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-white">
+        <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
           Standard Tartine Country Sourdough Formula
         </h1>
-        <p className="text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
+        <p className="text-stone-600 dark:text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed">
           The Sourdough Journey two-factor calculations are calibrated to Chad Robertson’s iconic 90/10 country loaf. Scale dough weights effortlessly and select the optimal fermentation vessel size.
         </p>
 
         {/* Loaf Selector Tabs */}
         <div className="pt-2">
-          <span className="text-xs text-stone-400 block mb-2 font-medium">Batch Size:</span>
+          <span className="text-xs text-stone-600 dark:text-stone-400 block mb-2 font-medium">Batch Size:</span>
           <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
             {[1, 2, 3, 4].map((count) => (
               <Button
