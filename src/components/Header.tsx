@@ -25,12 +25,12 @@ export function Header({
 }: HeaderProps) {
   const tabs = [
     { id: 'calculator', label: 'Calculator', icon: Flame },
-    { id: 'ddt', label: 'DDT Water', icon: Waves },
-    { id: 'tracker', label: 'Active Bake', icon: Clock },
-    { id: 'bulk-o-matic', label: 'Bulk-O-Matic', icon: Activity },
-    { id: 'recipe', label: 'Recipe & Vessel', icon: Scale },
-    { id: 'log', label: 'Baking Log', icon: ScrollText },
-    { id: 'references', label: 'References', icon: BookOpen },
+    { id: 'ddt', label: 'Water Temp', icon: Waves },
+    { id: 'tracker', label: 'Track', icon: Clock },
+    { id: 'bulk-o-matic', label: 'Readiness', icon: Activity },
+    { id: 'recipe', label: 'Recipe', icon: Scale },
+    { id: 'log', label: 'Log', icon: ScrollText },
+    { id: 'references', label: 'Guide', icon: BookOpen },
   ];
 
   return (
@@ -57,13 +57,7 @@ export function Header({
                 <span className="font-serif font-bold text-xl sm:text-2xl tracking-tight text-stone-900 dark:text-amber-100 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">
                   Ferment
                 </span>
-                <span className="hidden lg:inline-flex text-[10px] uppercase font-mono tracking-wider px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-800 dark:text-amber-300 border border-amber-500/30">
-                  v2.0
-                </span>
               </div>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 hidden sm:block">
-                The Sourdough Journey • Two-Factor Fermentation System
-              </p>
             </div>
           </button>
 
@@ -121,33 +115,6 @@ export function Header({
                 °C
               </button>
             </div>
-
-            {/* Active Session Status / Start Action */}
-            <Button
-              variant={hasActiveSession ? 'amber' : 'outline'}
-              size="sm"
-              onClick={() => setCurrentTab('tracker')}
-              className={`hidden md:flex items-center gap-2 rounded-xl text-xs font-medium border ${
-                hasActiveSession
-                  ? 'bg-emerald-100/80 hover:bg-emerald-200/80 border-emerald-300 text-emerald-900 dark:bg-emerald-950/70 dark:border-emerald-500/60 dark:text-emerald-300 dark:hover:bg-emerald-900/80'
-                  : 'bg-white hover:bg-stone-100 border-stone-200 text-stone-700 dark:bg-stone-900 dark:hover:bg-stone-800 dark:border-stone-700 dark:text-stone-300'
-              }`}
-            >
-              {hasActiveSession ? (
-                <>
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
-                  <span>Active Session Running</span>
-                </>
-              ) : (
-                <>
-                  <Clock className="w-3.5 h-3.5 text-stone-400" />
-                  <span>Start New Bake</span>
-                </>
-              )}
-            </Button>
           </div>
         </div>
 

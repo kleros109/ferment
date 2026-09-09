@@ -51,6 +51,7 @@ export function DDTCalculator({
   const [customFrictionF, setCustomFrictionF] = useState<number>(0);
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
   const [showBreakdown, setShowBreakdown] = useState<boolean>(false);
+  const [showTips, setShowTips] = useState<boolean>(false);
 
   const step = tempUnit === 'F' ? 1 : 0.5;
   const roundVal = (val: number) => tempUnit === 'F' ? Math.round(val) : Math.round(val * 2) / 2;
@@ -95,16 +96,16 @@ export function DDTCalculator({
   // Presets for quick selection
   const presets = tempUnit === 'F'
     ? [
-        { label: 'Cool 72°F', val: 72, desc: 'Slower ferment, high flavor' },
-        { label: 'Moderate 75°F', val: 75, desc: 'Balanced commercial pace' },
-        { label: 'Tartine 78°F', val: 78, desc: 'Standard Chad Robertson DDT' },
-        { label: 'Warm 80°F', val: 80, desc: 'Fast, active sour bulk' },
+        { label: '72°F', val: 72 },
+        { label: '75°F', val: 75 },
+        { label: '78°F', val: 78 },
+        { label: '80°F', val: 80 },
       ]
     : [
-        { label: 'Cool 22°C', val: 22.2, desc: 'Slower ferment, high flavor' },
-        { label: 'Moderate 24°C', val: 24, desc: 'Balanced commercial pace' },
-        { label: 'Tartine 25.5°C', val: 25.5, desc: 'Standard Chad Robertson DDT' },
-        { label: 'Warm 26.7°C', val: 26.7, desc: 'Fast, active sour bulk' },
+        { label: '22°C', val: 22.2 },
+        { label: '24°C', val: 24 },
+        { label: '25.5°C', val: 25.5 },
+        { label: '27°C', val: 26.7 },
       ];
 
   const statusStylesMap = {
@@ -152,44 +153,31 @@ export function DDTCalculator({
   return (
     <Card className={`overflow-hidden ${className}`}>
       {/* Card Header */}
-      <div className="p-5 sm:p-6 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-b border-stone-200/90 dark:border-stone-800">
+      <div className="p-4 sm:p-5 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-b border-stone-200/90 dark:border-stone-800">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-1.5">
-            <Badge variant="amber" className="text-[11px] font-mono">
-              <Thermometer className="w-3.5 h-3.5" />
-              Desired Dough Temperature (DDT)
-            </Badge>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-white flex items-center gap-2">
-              <Waves className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-              Implied Water Temperature Calculator
-            </h2>
-            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 max-w-xl leading-relaxed">
-              Calculate the exact water temperature needed to hit your target dough temperature.
-              Pre-calibrated for <strong>hand-mixed dough</strong> with zero mechanical friction.
-            </p>
-          </div>
+          <h2 className="font-serif text-lg sm:text-xl font-bold text-stone-900 dark:text-white flex items-center gap-2">
+            <Waves className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            Implied Water Temperature (DDT)
+          </h2>
 
-          <div className="flex items-center gap-2 self-start sm:self-center">
-            <Badge variant="secondary" className="gap-2 px-3 py-1 text-xs font-mono">
-              <Hand className="w-3.5 h-3.5 text-amber-400" />
-              <span>Hand Mixed: <strong>0°{tempUnit} Friction</strong></span>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="gap-1.5 px-2.5 py-1 text-xs font-mono">
+              <Hand className="w-3.5 h-3.5 text-amber-500" />
+              <span>Hand Mix: <strong>0°{tempUnit} Friction</strong></span>
             </Badge>
           </div>
         </div>
       </div>
 
-      <CardContent className="p-5 sm:p-6 space-y-6">
+      <CardContent className="p-4 sm:p-5 space-y-5">
         {/* Quick DDT Preset Buttons */}
         <div>
           <div className="flex items-center justify-between mb-2">
             <label className="text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
-              Quick DDT Presets
+              Quick Target Presets
             </label>
-            <span className="text-[11px] text-stone-500 dark:text-stone-400">
-              Target for bulk fermentation
-            </span>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             {presets.map((p) => {
               const isSelected = Math.abs(activeDDT - p.val) < 0.3;
               return (
@@ -197,19 +185,13 @@ export function DDTCalculator({
                   key={p.label}
                   type="button"
                   onClick={() => handleDdtChange(p.val)}
-                  className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  className={`py-2 px-3 rounded-xl border text-center transition-all cursor-pointer ${
                     isSelected
                       ? 'bg-amber-500/15 dark:bg-amber-500/20 border-amber-500 text-amber-950 dark:text-amber-200 font-bold shadow-xs ring-1 ring-amber-500/30'
                       : 'bg-stone-50/70 dark:bg-stone-800/60 border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700'
                   }`}
                 >
-                  <div className="text-xs font-bold flex items-center justify-between">
-                    <span>{p.label}</span>
-                    {isSelected && <span className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400" />}
-                  </div>
-                  <div className="text-[10px] text-stone-500 dark:text-stone-400 font-normal mt-0.5 leading-tight">
-                    {p.desc}
-                  </div>
+                  <span className="text-xs font-bold">{p.label}</span>
                 </button>
               );
             })}
@@ -259,9 +241,6 @@ export function DDTCalculator({
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400">
-              The internal temperature you want your mixed dough to achieve.
-            </p>
           </div>
 
           {/* Input 2: Air Temp */}
@@ -305,9 +284,6 @@ export function DDTCalculator({
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400">
-              Current ambient temperature of your kitchen or proofing area.
-            </p>
           </div>
 
           {/* Input 3: Flour Temp */}
@@ -358,9 +334,6 @@ export function DDTCalculator({
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400">
-              Probe dry flour bag. If in pantry, it usually equals room temp.
-            </p>
           </div>
         </div>
 
@@ -549,27 +522,42 @@ export function DDTCalculator({
           </div>
         </div>
 
-        {/* Pro Baker Tips for DDT Execution */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
-          <div className="p-3.5 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1">
-            <div className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
-              <Thermometer className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              Blender Tap Technique
-            </div>
-            <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
-              If your tap hot water is 120°F and cold tap is 55°F, blend them in a pitcher and stir thoroughly with your instant-read digital probe thermometer before weighing into your bowl.
-            </p>
-          </div>
+        {/* Pro Baker Tips for DDT Execution (Collapsible) */}
+        <div className="pt-1">
+          <button
+            type="button"
+            onClick={() => setShowTips(!showTips)}
+            className="flex items-center justify-between w-full p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 text-xs font-semibold text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer transition-colors"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              Baker&apos;s Tips: Blending Tap &amp; High Water Temps
+            </span>
+            {showTips ? <ChevronUp className="w-4 h-4 text-stone-500" /> : <ChevronDown className="w-4 h-4 text-stone-500" />}
+          </button>
+          {showTips && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3 text-xs">
+              <div className="p-3.5 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1">
+                <div className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+                  <Thermometer className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  Blender Tap Technique
+                </div>
+                <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
+                  If your tap hot water is 120°F and cold tap is 55°F, blend them in a pitcher and stir thoroughly with your instant-read digital probe thermometer before weighing into your bowl.
+                </p>
+              </div>
 
-          <div className="p-3.5 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1">
-            <div className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
-              Protecting Starter Microbes
+              <div className="p-3.5 bg-stone-50 dark:bg-stone-800/60 rounded-xl border border-stone-200 dark:border-stone-700 space-y-1">
+                <div className="font-bold text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                  Protecting Starter Microbes
+                </div>
+                <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
+                  If your calculated water temperature exceeds 100°F (38°C) to warm up chilly flour, mix the warm water with the flour first (autolyse), then add your starter once the dough has stabilized below 90°F.
+                </p>
+              </div>
             </div>
-            <p className="text-stone-600 dark:text-stone-400 text-[11px] leading-relaxed">
-              If your calculated water temperature exceeds 100°F (38°C) to warm up chilly flour, mix the warm water with the flour first (autolyse), then add your starter once the dough has stabilized below 90°F.
-            </p>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

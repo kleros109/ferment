@@ -13,6 +13,7 @@ import {
   Minus,
   ChevronLeft,
   ChevronDown,
+  ChevronUp,
   Check,
   Flame,
   Scale,
@@ -66,6 +67,7 @@ export function ActiveTrackerTab({
   );
   const [domeLow, setDomeLow] = useState<number>(session.domeLowPointMl || 1000);
   const [domeHigh, setDomeHigh] = useState<number>(session.domeHighPointMl || 1200);
+  const [showCoolingCurve, setShowCoolingCurve] = useState<boolean>(false);
 
   // Timer interval
   useEffect(() => {
@@ -353,10 +355,10 @@ export function ActiveTrackerTab({
                   </div>
                   <div>
                     <CardTitle className="text-lg font-bold text-stone-900 dark:text-white">
-                      Step 1: Mix Ingredients & Measure Starting Volume
+                      Step 1: Mix & Starting Volume
                     </CardTitle>
                     <CardDescription className="text-xs text-stone-500 dark:text-stone-400">
-                      Follow your recipe. Transfer mixed dough into your transparent measuring container and level it.
+                      Transfer mixed dough into measuring container and level surface.
                     </CardDescription>
                   </div>
                 </div>
@@ -439,13 +441,12 @@ export function ActiveTrackerTab({
                   </div>
                 </div>
 
-                <Alert variant="amber">
-                  <Sparkles className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <AlertTitle className="text-amber-900 dark:text-amber-200">Tom's Pro Tip: The Shorthand Method</AlertTitle>
-                  <AlertDescription className="text-amber-800 dark:text-amber-300">
-                    High-protein flour at 75% hydration mixes to approximately <strong>1.5× the dry flour weight</strong> in milliliters. (e.g. 500g flour = ~750 mL). Once measured accurately, it remains consistent for that recipe!
-                  </AlertDescription>
-                </Alert>
+                <div className="px-3.5 py-2.5 bg-amber-50/70 dark:bg-amber-950/30 rounded-xl border border-amber-200/80 dark:border-amber-800/40 text-xs text-amber-900 dark:text-amber-300 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>
+                    <strong>Shorthand:</strong> 500g flour at 75% hydration ≈ 750 mL starting volume (~1.5× dry flour weight).
+                  </span>
+                </div>
 
                 <div className="flex justify-end pt-2">
                   <Button
@@ -680,10 +681,8 @@ export function ActiveTrackerTab({
                   </div>
 
                   <div className="text-xs text-stone-600 dark:text-stone-300 bg-white/80 dark:bg-stone-800/80 p-3 rounded-xl border border-stone-200 dark:border-stone-700 leading-relaxed">
-                    <strong>Tom Cucuzza's Rule: </strong>
-                    Mark your container with tape or dry-erase marker at exactly{' '}
+                    Mark container with tape or dry-erase marker at exactly{' '}
                     <strong className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">{session.targetVolumeMl} mL</strong>.
-                    Now put the lid on and ignore the clock. Let the yeast do the work!
                   </div>
                 </div>
 
@@ -924,17 +923,27 @@ export function ActiveTrackerTab({
               </CardHeader>
 
               <CardContent className="p-6 pt-0 space-y-5">
-                <div className="p-4 bg-sky-50 dark:bg-sky-950/30 rounded-xl border border-sky-200 dark:border-sky-800/40 text-xs text-sky-950 dark:text-sky-200 space-y-2 leading-relaxed">
-                  <div className="font-semibold flex items-center gap-1.5 text-sky-900 dark:text-sky-300">
-                    <Snowflake className="w-4 h-4 text-sky-700 dark:text-sky-400" />
-                    Why 8–16 Hours? The Cooling Curve Secret
-                  </div>
-                  <p className="text-stone-700 dark:text-stone-300">
-                    Tom Cucuzza’s thermal experiments show that warm shaped dough takes <strong>8 to 10 hours</strong> to fully cool down to 39°F (4°C) inside the refrigerator.
-                  </p>
-                  <p className="text-stone-700 dark:text-stone-300">
-                    Once the dough core reaches 39°F, yeast fermentation virtually stops! Therefore, leaving dough for 10 hours vs 14 hours has almost identical proofing levels.
-                  </p>
+                {/* Collapsible Cooling Curve Note */}
+                <div className="rounded-xl border border-sky-200 dark:border-sky-800/60 overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={() => setShowCoolingCurve(!showCoolingCurve)}
+                    className="w-full p-3 flex items-center justify-between text-left bg-sky-50/70 dark:bg-sky-950/30 text-xs font-semibold text-sky-900 dark:text-sky-200 hover:bg-sky-100/60 dark:hover:bg-sky-900/40 cursor-pointer transition-colors"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Snowflake className="w-4 h-4 text-sky-700 dark:text-sky-400" />
+                      Baker&apos;s Note: Why 8–16 Hours? (The Cooling Curve)
+                    </span>
+                    {showCoolingCurve ? <ChevronUp className="w-4 h-4 text-sky-600" /> : <ChevronDown className="w-4 h-4 text-sky-600" />}
+                  </button>
+                  {showCoolingCurve && (
+                    <div className="p-3.5 bg-sky-50/40 dark:bg-sky-950/20 text-xs text-stone-700 dark:text-stone-300 border-t border-sky-100 dark:border-sky-900/60 space-y-1.5 leading-relaxed">
+                      <p>
+                        Warm shaped dough takes <strong>8 to 10 hours</strong> to cool to 39°F (4°C) in the fridge.
+                        Once the core reaches 39°F, yeast fermentation halts, making 10h vs 14h proofing levels nearly identical.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">

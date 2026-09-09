@@ -119,44 +119,38 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* Header Banner */}
-      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-6 border border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-xl space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Sleek Log Header */}
+      <div className="bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 rounded-2xl p-4 sm:p-5 border border-stone-200/90 dark:border-stone-800 shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <div className="mb-2">
-              <Badge variant="amber" className="gap-1.5">
-                <ScrollText className="w-3.5 h-3.5" />
-                Appendices 2 & 3 Digital Worksheet
-              </Badge>
-            </div>
-            <h1 className="font-serif text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mt-1">
-              Baker's Notebook & Calibration Log
+            <h1 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">
+              Baking Log ({logs.length})
             </h1>
-            <p className="text-stone-600 dark:text-stone-300 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Once you dial in the optimal percentage rise for a recipe and dough temperature, it <span className="text-amber-700 dark:text-amber-300 font-semibold italic">never changes</span>. Keep meticulous records to make every bake repeatable.
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+              Recorded fermentation sessions and calibration history
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={onExportLogs}
-              className="gap-1.5 text-xs font-semibold"
+              className="gap-1.5 text-xs font-semibold h-8"
               title="Download all bakes as JSON backup"
             >
-              <Download className="w-3.5 h-3.5 text-amber-400" />
+              <Download className="w-3.5 h-3.5 text-amber-500" />
               Backup
             </Button>
             <Button
               type="button"
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="gap-1.5 text-xs font-semibold"
+              className="gap-1.5 text-xs font-semibold h-8"
               title="Restore bakes from a JSON backup"
             >
-              <Upload className="w-3.5 h-3.5 text-amber-400" />
+              <Upload className="w-3.5 h-3.5 text-amber-500" />
               Restore
             </Button>
             <input

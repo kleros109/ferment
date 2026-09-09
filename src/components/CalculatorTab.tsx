@@ -1,4 +1,4 @@
-import { useState, useMemo, type CSSProperties } from 'react';
+import { useState, useMemo, useEffect, type CSSProperties } from 'react';
 import {
   Thermometer,
   Layers,
@@ -26,7 +26,6 @@ import {
   calculateDomeVolume,
 } from '../utils/fermentCalculations';
 import { DOUGH_TEMP_GUIDE } from '../data/sourdoughData';
-import { DDTCalculator } from './DDTCalculator';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -36,7 +35,12 @@ import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 interface CalculatorTabProps {
   tempUnit: TempUnit;
-  initialMode?: 'two-factor' | 'ddt';
+  initialDoughTempF?: number;
+  initialFlourGrams?: number;
+  initialStartingVolumeMl?: number;
+  noticeMessage?: string | null;
+  onClearNotice?: () => void;
+  onNavigateToDDT?: () => void;
   onStartBakeWithValues?: (data: {
     doughTempF: number;
     flourGrams: number;
@@ -48,20 +52,43 @@ interface CalculatorTabProps {
 
 export function CalculatorTab({
   tempUnit,
-  initialMode = 'two-factor',
+  initialDoughTempF,
+  initialFlourGrams,
+  initialStartingVolumeMl,
+  noticeMessage,
+  onClearNotice,
+  onNavigateToDDT,
   onStartBakeWithValues,
 }: CalculatorTabProps) {
-  const [activeMode, setActiveMode] = useState<'two-factor' | 'ddt'>(initialMode);
-  const [ddtAppliedNotice, setDdtAppliedNotice] = useState<string | null>(null);
-  const [showMobileBannerInfo, setShowMobileBannerInfo] = useState<boolean>(false);
-  const [showMobileReferenceTable, setShowMobileReferenceTable] = useState<boolean>(false);
+  const [showReferenceTable, setShowReferenceTable] = useState<boolean>(false);
 
   // Dough temp state in Fahrenheit internally
-  const [doughTempF, setDoughTempF] = useState<number>(75);
-  const [flourGrams, setFlourGrams] = useState<number>(500);
-  const [startingVolumeMl, setStartingVolumeMl] = useState<number>(750);
+  const [doughTempF, setDoughTempF] = useState<number>(initialDoughTempF ?? 75);
+  const [flourGrams, setFlourGrams] = useState<number>(initialFlourGrams ?? 500);
+  const [startingVolumeMl, setStartingVolumeMl] = useState<number>(initialStartingVolumeMl ?? 750);
   const [useShorthand, setUseShorthand] = useState<boolean>(true);
-  const [currentDoughVolume, setCurrentDoughVolume] = useState<number>(750);
+  const [currentDoughVolume, setCurrentDoughVolume] = useState<number>(initialStartingVolumeMl ?? 750);
+
+  useEffect(() => {
+    if (initialDoughTempF !== undefined) {
+      setDoughTempF(initialDoughTempF);
+    }
+  }, [initialDoughTempF]);
+
+  useEffect(() => {
+    if (initialFlourGrams !== undefined) {
+      setFlourGrams(initialFlourGrams);
+    }
+  }, [initialFlourGrams]);
+
+  useEffect(() => {
+    if (initialStartingVolumeMl !== undefined) {
+      setStartingVolumeMl(initialStartingVolumeMl);
+      setCurrentDoughVolume(initialStartingVolumeMl);
+      setDomeLowPoint(initialStartingVolumeMl - 50);
+      setDomeHighPoint(initialStartingVolumeMl + 50);
+    }
+  }, [initialStartingVolumeMl]);
   
   // Dome measurement state
   const [isDomed, setIsDomed] = useState<boolean>(false);
@@ -129,113 +156,28 @@ export function CalculatorTab({
 
   return (
     <div className="space-y-5 sm:space-y-6">
-      {/* Top Method Banner Card */}
-      <Card className="relative overflow-hidden bg-gradient-to-br from-amber-500/10 via-amber-900/10 to-stone-900/20 border-amber-500/30">
-        <CardContent className="p-5 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <Badge variant="amber" className="text-[11px] font-mono tracking-wide">
-                  <Sparkles className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                  The Sourdough Journey
-                </Badge>
-                <span className="text-[11px] text-stone-500 dark:text-stone-400 hidden sm:inline">
-                  Tom Cucuzza Framework
-                </span>
-              </div>
-              <h1 className="font-serif font-bold text-xl sm:text-2xl lg:text-3xl text-stone-900 dark:text-stone-50 tracking-tight">
-                Two-Factor Fermentation Calculator
-              </h1>
-              <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 leading-relaxed">
-                Stop relying on <em className="italic text-amber-800 dark:text-amber-300 font-medium">"let it double"</em>. Synchronize your bulk rise cutoff with internal dough temperature, and use the DDT calculator to hit your target mixed temperature every time.
-              </p>
-            </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowMobileBannerInfo(!showMobileBannerInfo)}
-              className="sm:hidden self-start text-xs font-semibold gap-1 text-amber-800 dark:text-amber-300"
-            >
-              <Info className="w-3.5 h-3.5" />
-              <span>{showMobileBannerInfo ? 'Hide Method' : 'How it Works'}</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Expandable Mobile Method Explanation */}
-      {showMobileBannerInfo && (
-        <Alert variant="amber" className="sm:hidden animate-fade-in">
-          <Info className="w-4 h-4" />
-          <AlertTitle className="text-xs font-bold text-amber-900 dark:text-amber-200">
-            The Two-Factor Method
-          </AlertTitle>
-          <AlertDescription className="text-xs text-stone-700 dark:text-stone-300 space-y-1.5 pt-1">
-            <p>
-              1. <strong>Dough Temperature:</strong> Warmer dough (80°F) continues fermenting fast during the 8-10 hour refrigerator cooling curve, requiring cutoff at only 30% rise. Cooler dough (68°F) needs 100% rise because it cools rapidly in the fridge.
-            </p>
-            <p>
-              2. <strong>Starting Volume:</strong> Measure accurate volume using straight-sided containers or Tom's shorthand (Flour grams × 1.5 = mL).
-            </p>
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Mode Switcher: Two-Factor Fermentation vs DDT Water Calculator */}
-      <div className="flex items-center gap-2 bg-stone-100 dark:bg-stone-900 p-1 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xs">
-        <Button
-          variant={activeMode === 'two-factor' ? 'default' : 'ghost'}
-          size="default"
-          onClick={() => setActiveMode('two-factor')}
-          className="flex-1 rounded-xl text-xs sm:text-sm font-semibold gap-2"
-        >
-          <Sparkles className="w-4 h-4 shrink-0" />
-          <span className="truncate">Two-Factor Rise Guide</span>
-        </Button>
-        <Button
-          variant={activeMode === 'ddt' ? 'default' : 'ghost'}
-          size="default"
-          onClick={() => setActiveMode('ddt')}
-          className="flex-1 rounded-xl text-xs sm:text-sm font-semibold gap-2"
-        >
-          <Waves className="w-4 h-4 shrink-0" />
-          <span className="truncate">DDT Water Temp</span>
-        </Button>
-      </div>
-
-      {ddtAppliedNotice && (
+      {noticeMessage && (
         <Alert variant="emerald" className="shadow-xs animate-fade-in flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-            <span className="text-xs font-semibold">{ddtAppliedNotice}</span>
+            <span className="text-xs font-semibold">{noticeMessage}</span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => setDdtAppliedNotice(null)}
-            className="w-6 h-6 rounded-md hover:bg-emerald-200/50 dark:hover:bg-emerald-900/50 text-xs font-bold"
-          >
-            ✕
-          </Button>
+          {onClearNotice && (
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={onClearNotice}
+              className="w-6 h-6 rounded-md hover:bg-emerald-200/50 dark:hover:bg-emerald-900/50 text-xs font-bold"
+            >
+              ✕
+            </Button>
+          )}
         </Alert>
       )}
 
-      {activeMode === 'ddt' ? (
-        <DDTCalculator
-          tempUnit={tempUnit}
-          defaultDDT={doughTempF}
-          onApplyDDTToDoughTemp={(val) => {
-            setDoughTempF(val);
-            setActiveMode('two-factor');
-            const displayVal = tempUnit === 'F' ? `${val}°F` : `${fahrenheitToCelsius(val)}°C`;
-            setDdtAppliedNotice(`Applied ${displayVal} as Dough Temperature! Target rise set to ${getGuideForTemperature(val).targetRise}%.`);
-            setTimeout(() => setDdtAppliedNotice(null), 6000);
-          }}
-        />
-      ) : (
-        /* Main Grid: Inputs on Left, Vessel Visualizer on Right */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+      {/* Main Grid: Inputs on Left, Vessel Visualizer on Right */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
         
         {/* Left Column: Factor 1 & Factor 2 Controls + Results */}
         <div className="lg:col-span-7 space-y-5">
@@ -252,9 +194,6 @@ export function CalculatorTab({
                     <CardTitle className="text-sm sm:text-base">
                       Factor 1: Dough Temperature
                     </CardTitle>
-                    <CardDescription className="hidden sm:block">
-                      Measure center dough temp with an instant-read probe
-                    </CardDescription>
                   </div>
                 </div>
 
@@ -302,11 +241,11 @@ export function CalculatorTab({
                   aria-label="Dough temperature"
                 />
                 <div className="flex justify-between text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400 font-mono select-none px-1">
-                  <span>{tempUnit === 'F' ? '65°F (Cold)' : '18°C'}</span>
-                  <span>{tempUnit === 'F' ? '70°F' : '21°C'}</span>
-                  <span className="font-bold text-amber-800 dark:text-amber-400">{tempUnit === 'F' ? '75°F' : '24°C'}</span>
-                  <span>{tempUnit === 'F' ? '78°F' : '25.5°C'}</span>
-                  <span>{tempUnit === 'F' ? '82°F (Warm)' : '28°C'}</span>
+                  <span>{tempUnit === 'F' ? '65°' : '18°'}</span>
+                  <span>{tempUnit === 'F' ? '70°' : '21°'}</span>
+                  <span className="font-bold text-amber-800 dark:text-amber-400">{tempUnit === 'F' ? '75°' : '24°'}</span>
+                  <span>{tempUnit === 'F' ? '78°' : '25.5°'}</span>
+                  <span>{tempUnit === 'F' ? '82°' : '28°'}</span>
                 </div>
               </div>
 
@@ -314,7 +253,7 @@ export function CalculatorTab({
               <div className="grid grid-cols-5 gap-1.5 pt-1">
                 {[65, 70, 75, 78, 80].map((tF) => {
                   const isSelected = Math.round(doughTempF) === tF;
-                  const displayValue = tempUnit === 'F' ? `${tF}°F` : `${fahrenheitToCelsius(tF)}°C`;
+                  const displayValue = tempUnit === 'F' ? `${tF}°` : `${fahrenheitToCelsius(tF)}°`;
                   return (
                     <Button
                       key={tF}
@@ -339,7 +278,7 @@ export function CalculatorTab({
                 <Button
                   variant="link"
                   size="sm"
-                  onClick={() => setActiveMode('ddt')}
+                  onClick={() => onNavigateToDDT?.()}
                   className="gap-1 text-amber-700 dark:text-amber-400 font-semibold"
                 >
                   <Waves className="w-3.5 h-3.5" />
@@ -375,9 +314,6 @@ export function CalculatorTab({
                     <CardTitle className="text-sm sm:text-base">
                       Factor 2: Starting Volume
                     </CardTitle>
-                    <CardDescription className="hidden sm:block">
-                      Leveled volume in milliliters after ingredients are combined
-                    </CardDescription>
                   </div>
                 </div>
                 <Button
@@ -454,10 +390,10 @@ export function CalculatorTab({
                     })}
                   </div>
 
-                  <div className="p-3 bg-amber-50/80 dark:bg-amber-950/40 rounded-xl border border-amber-200/80 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-200 flex items-center justify-between">
-                    <span className="text-stone-600 dark:text-stone-300">Shorthand Formula ({flourGrams}g × 1.5):</span>
-                    <span className="font-mono font-bold text-amber-900 dark:text-amber-400 text-sm">
-                      = {startingVolumeMl} mL Starting Volume
+                  <div className="px-3 py-2 bg-amber-50/80 dark:bg-amber-950/40 rounded-xl border border-amber-200/80 dark:border-amber-800/60 text-xs flex items-center justify-between">
+                    <span className="text-stone-600 dark:text-stone-300">Shorthand ({flourGrams}g × 1.5):</span>
+                    <span className="font-mono font-bold text-amber-900 dark:text-amber-400">
+                      {startingVolumeMl} mL Starting Volume
                     </span>
                   </div>
                 </div>
@@ -574,66 +510,6 @@ export function CalculatorTab({
                   </Button>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Desktop Only: Quick Temperature Reference Table */}
-          <Card className="hidden lg:block">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-semibold">
-                  The Sourdough Journey Temping Guide (2024)
-                </CardTitle>
-                <Badge variant="secondary" className="font-mono text-[11px]">
-                  16 Temperatures
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="overflow-x-auto max-h-48 overflow-y-auto border border-stone-200 dark:border-stone-800 rounded-xl">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 sticky top-0 font-medium">
-                    <tr>
-                      <th className="p-2.5">Dough Temp</th>
-                      <th className="p-2.5">Target % Rise</th>
-                      <th className="p-2.5">Approx. Planning Time</th>
-                      <th className="p-2.5">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-stone-100 dark:divide-stone-800 font-mono">
-                    {DOUGH_TEMP_GUIDE.map((entry) => {
-                      const isSelected = Math.round(doughTempF) === entry.tempF;
-                      return (
-                        <tr
-                          key={entry.tempF}
-                          onClick={() => setDoughTempF(entry.tempF)}
-                          className={`cursor-pointer transition-colors ${
-                            isSelected
-                              ? 'bg-amber-100/80 dark:bg-amber-950/70 font-bold text-amber-900 dark:text-amber-300'
-                              : 'hover:bg-stone-50 dark:hover:bg-stone-800/60 text-stone-700 dark:text-stone-300'
-                          }`}
-                        >
-                          <td className="p-2">
-                            {entry.tempF}°F / {entry.tempC}°C
-                          </td>
-                          <td className="p-2 text-amber-700 dark:text-amber-400 font-bold">
-                            +{entry.targetRise}%
-                          </td>
-                          <td className="p-2 text-stone-500 dark:text-stone-400">
-                            {entry.approxHours}
-                          </td>
-                          <td className="p-2 font-sans text-[11px] text-amber-600 dark:text-amber-400 font-semibold">
-                            {isSelected ? '✓ Selected' : 'Select'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 italic">
-                * Recipe assumption: 90% Bread Flour, 10% Whole Wheat, 75% Hydration, 20% Starter, 2% Salt. Retard 12-16 hrs at 37-39°F (3-4°C).
-              </p>
             </CardContent>
           </Card>
         </div>
@@ -890,27 +766,27 @@ export function CalculatorTab({
             </CardContent>
           </Card>
 
-          {/* Mobile Only: Quick Temperature Reference Table Accordion */}
-          <Card className="block lg:hidden overflow-hidden">
+          {/* Quick Temperature Reference Table Accordion */}
+          <Card className="overflow-hidden">
             <button
               type="button"
-              onClick={() => setShowMobileReferenceTable(!showMobileReferenceTable)}
+              onClick={() => setShowReferenceTable(!showReferenceTable)}
               className="w-full p-4 flex items-center justify-between text-left hover:bg-stone-50 dark:hover:bg-stone-800/50 active:bg-stone-50 dark:active:bg-stone-800/50 transition-colors touch-manipulation cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                 <span className="text-xs font-bold text-stone-900 dark:text-stone-100">
-                  TSJ 2024 Reference Table (16 Temperatures)
+                  Reference Guide (16 Temperatures)
                 </span>
               </div>
-              {showMobileReferenceTable ? (
+              {showReferenceTable ? (
                 <ChevronUp className="w-4 h-4 text-stone-500 dark:text-stone-400" />
               ) : (
                 <ChevronDown className="w-4 h-4 text-stone-500 dark:text-stone-400" />
               )}
             </button>
 
-            {showMobileReferenceTable && (
+            {showReferenceTable && (
               <CardContent className="pt-0 space-y-3 border-t border-stone-100 dark:border-stone-800">
                 <div className="overflow-x-auto max-h-56 overflow-y-auto border border-stone-200 dark:border-stone-800 rounded-xl mt-3">
                   <table className="w-full text-left text-xs">
@@ -962,7 +838,6 @@ export function CalculatorTab({
 
         </div>
       </div>
-      )}
     </div>
   );
 }

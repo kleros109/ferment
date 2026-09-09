@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { Flame, Clock, Activity, ScrollText, BookOpen, Waves, MoreHorizontal, X, ChevronRight, Scale, Sparkles, Sun, Moon } from 'lucide-react';
 import { Header } from './components/Header';
 import { CalculatorTab } from './components/CalculatorTab';
+import { DDTCalculator } from './components/DDTCalculator';
 import { ActiveTrackerTab } from './components/ActiveTrackerTab';
 import { BulkOMaticTab } from './components/BulkOMaticTab';
 import { RecipeTab } from './components/RecipeTab';
 import { BakersLogTab } from './components/BakersLogTab';
 import { ReferencesTab } from './components/ReferencesTab';
 import { BakeSession, TempUnit } from './types';
-import { calculateTargetVolume, fahrenheitToCelsius } from './utils/fermentCalculations';
+import { calculateTargetVolume, fahrenheitToCelsius, getGuideForTemperature } from './utils/fermentCalculations';
 import { Button } from './components/ui/button';
 import { Badge } from './components/ui/badge';
 
@@ -125,6 +126,23 @@ export default function App() {
     }
     return 'light';
   });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (VALID_TABS.includes(hash)) {
+        setCurrentTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.location.hash = currentTab;
+    }
+  }, [currentTab]);
 
   useEffect(() => {
     try {
@@ -315,12 +333,20 @@ export default function App() {
     setCurrentTab('tracker');
   };
 
+  // Shared state for Calculator and DDT tabs
+  const [calculatorDoughTempF, setCalculatorDoughTempF] = useState<number>(75);
+  const [calculatorFlourGrams, setCalculatorFlourGrams] = useState<number>(500);
+  const [calculatorStartingVolumeMl, setCalculatorStartingVolumeMl] = useState<number>(750);
+  const [ddtAppliedNotice, setDdtAppliedNotice] = useState<string | null>(null);
+
   // Handler: Transfer recipe data to calculator
   const handleLoadRecipeIntoCalculator = (
-    _flourGrams: number,
-    _startingVolumeMl: number,
+    flourGrams: number,
+    startingVolumeMl: number,
     initialMode: 'two-factor' | 'ddt' = 'two-factor'
   ) => {
+    setCalculatorFlourGrams(flourGrams);
+    setCalculatorStartingVolumeMl(startingVolumeMl);
     setCurrentTab(initialMode === 'ddt' ? 'ddt' : 'calculator');
   };
 
@@ -342,17 +368,30 @@ export default function App() {
         {currentTab === 'calculator' && (
           <CalculatorTab
             tempUnit={tempUnit}
-            initialMode="two-factor"
+            initialDoughTempF={calculatorDoughTempF}
+            initialFlourGrams={calculatorFlourGrams}
+            initialStartingVolumeMl={calculatorStartingVolumeMl}
             onStartBakeWithValues={handleStartBakeFromCalculator}
+            onNavigateToDDT={() => setCurrentTab('ddt')}
+            noticeMessage={ddtAppliedNotice}
+            onClearNotice={() => setDdtAppliedNotice(null)}
           />
         )}
 
         {currentTab === 'ddt' && (
-          <CalculatorTab
-            tempUnit={tempUnit}
-            initialMode="ddt"
-            onStartBakeWithValues={handleStartBakeFromCalculator}
-          />
+          <div className="max-w-4xl mx-auto">
+            <DDTCalculator
+              tempUnit={tempUnit}
+              defaultDDT={calculatorDoughTempF}
+              onApplyDDTToDoughTemp={(val) => {
+                setCalculatorDoughTempF(val);
+                const displayVal = tempUnit === 'F' ? `${val}°F` : `${fahrenheitToCelsius(val)}°C`;
+                setDdtAppliedNotice(`Applied ${displayVal} as Dough Temperature! Target rise set to ${getGuideForTemperature(val).targetRise}%.`);
+                setTimeout(() => setDdtAppliedNotice(null), 6000);
+                setCurrentTab('calculator');
+              }}
+            />
+          </div>
         )}
 
         {currentTab === 'tracker' && (
