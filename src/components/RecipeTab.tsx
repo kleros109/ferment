@@ -73,22 +73,24 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
         </p>
 
         {/* Loaf Selector Tabs */}
-        <div className="flex items-center gap-2 pt-2">
-          <span className="text-xs text-stone-400 mr-1">Batch Size:</span>
-          {[1, 2, 3, 4].map((count) => (
-            <button
-              key={count}
-              type="button"
-              onClick={() => setLoafCount(count)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition-all ${
-                loafCount === count
-                  ? 'bg-amber-500 text-stone-950 shadow-sm'
-                  : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
-              }`}
-            >
-              {count} {count === 1 ? 'Loaf' : 'Loaves'} ({count * 500}g)
-            </button>
-          ))}
+        <div className="pt-2">
+          <span className="text-xs text-stone-400 block mb-1.5">Batch Size:</span>
+          <div className="grid grid-cols-2 sm:flex sm:items-center gap-2">
+            {[1, 2, 3, 4].map((count) => (
+              <button
+                key={count}
+                type="button"
+                onClick={() => setLoafCount(count)}
+                className={`px-3 py-2 rounded-xl text-xs font-mono font-bold transition-all min-h-[40px] flex items-center justify-center active:scale-95 ${
+                  loafCount === count
+                    ? 'bg-amber-500 text-stone-950 shadow-sm ring-1 ring-amber-400'
+                    : 'bg-stone-800 text-stone-300 hover:bg-stone-700'
+                }`}
+              >
+                {count} {count === 1 ? 'Loaf' : 'Loaves'} ({count * 500}g)
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -96,7 +98,7 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left: Recipe Ingredients Table */}
-        <div className="lg:col-span-7 bg-white rounded-2xl p-6 border border-stone-200 shadow-sm space-y-4">
+        <div className="lg:col-span-7 bg-white rounded-2xl p-5 sm:p-6 border border-stone-200 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-stone-200 pb-3">
             <h2 className="font-bold text-stone-900 text-base flex items-center gap-2">
               <Scale className="w-4 h-4 text-amber-600" />
@@ -107,8 +109,8 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
             </span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
+          <div className="overflow-x-auto -mx-2 sm:mx-0 px-2 sm:px-0">
+            <table className="w-full text-left text-xs min-w-[320px]">
               <thead className="bg-stone-50 text-stone-600 font-semibold border-b border-stone-200">
                 <tr>
                   <th className="p-2.5">Ingredient</th>
@@ -140,16 +142,16 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
                 </tr>
                 <tr>
                   <td className="p-2.5 font-sans font-medium text-stone-900">
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center justify-between gap-1.5">
                       <span>Water</span>
                       <button
                         type="button"
                         onClick={() => onLoadRecipeIntoCalculator(totalFlourGrams, startingVolumeMl, 'ddt')}
-                        className="inline-flex items-center gap-1 text-[11px] text-amber-800 bg-amber-100/70 hover:bg-amber-200/80 px-2 py-0.5 rounded font-sans font-semibold transition-colors"
+                        className="inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-md font-sans font-semibold transition-colors active:scale-95"
                         title="Calculate exact water temperature needed (DDT formula for hand mixing)"
                       >
                         <Waves className="w-3 h-3 text-amber-700" />
-                        Calculate Temp (DDT)
+                        Calc Temp (DDT)
                       </button>
                     </div>
                   </td>
@@ -175,7 +177,7 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
           </div>
 
           {/* Shorthand starting volume banner */}
-          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+          <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
             <div>
               <span className="font-semibold text-stone-900 block">Mixed Dough Starting Volume:</span>
               <span className="text-stone-500 font-mono text-[11px]">
@@ -185,7 +187,7 @@ export function RecipeTab({ onLoadRecipeIntoCalculator }: RecipeTabProps) {
             <button
               type="button"
               onClick={() => onLoadRecipeIntoCalculator(totalFlourGrams, startingVolumeMl)}
-              className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-lg font-semibold text-xs flex items-center gap-1.5 transition-colors shrink-0"
+              className="w-full sm:w-auto px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 shrink-0 min-h-[44px]"
             >
               Use in Calculator
               <ArrowRight className="w-3.5 h-3.5" />

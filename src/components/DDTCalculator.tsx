@@ -11,7 +11,11 @@ import {
   Flame,
   Snowflake,
   RotateCcw,
-  SlidersHorizontal
+  SlidersHorizontal,
+  Minus,
+  Plus,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { TempUnit } from '../types';
 import {
@@ -41,6 +45,10 @@ export function DDTCalculator({
   const [includeStarter, setIncludeStarter] = useState<boolean>(false);
   const [customFrictionF, setCustomFrictionF] = useState<number>(0);
   const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
+  const [showBreakdown, setShowBreakdown] = useState<boolean>(false);
+
+  const step = tempUnit === 'F' ? 1 : 0.5;
+  const roundVal = (val: number) => tempUnit === 'F' ? Math.round(val) : Math.round(val * 2) / 2;
 
   // Active inputs in current unit
   const activeDDT = tempUnit === 'F' ? ddtF : fahrenheitToCelsius(ddtF);
@@ -205,7 +213,7 @@ export function DDTCalculator({
         {/* Inputs Grid: DDT, Air Temp, Flour Temp */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Input 1: DDT */}
-          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2">
+          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
                 <Thermometer className="w-3.5 h-3.5 text-amber-600" />
@@ -213,17 +221,35 @@ export function DDTCalculator({
               </label>
               <span className="text-[10px] font-mono text-amber-700 font-semibold uppercase">Target</span>
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                step={tempUnit === 'F' ? 1 : 0.5}
-                value={activeDDT}
-                onChange={(e) => handleDdtChange(parseFloat(e.target.value) || 0)}
-                className="w-full text-2xl font-serif font-bold text-stone-900 bg-white px-3 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-sm font-semibold">
-                °{tempUnit}
-              </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleDdtChange(roundVal(activeDDT - step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Decrease target dough temperature"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  step={step}
+                  value={activeDDT}
+                  onChange={(e) => handleDdtChange(parseFloat(e.target.value) || 0)}
+                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 bg-white px-2 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                />
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
+                  °{tempUnit}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleDdtChange(roundVal(activeDDT + step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Increase target dough temperature"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
             <p className="text-[11px] text-stone-500">
               The internal temperature you want your mixed dough to achieve.
@@ -231,7 +257,7 @@ export function DDTCalculator({
           </div>
 
           {/* Input 2: Air Temp */}
-          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2">
+          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
                 <Thermometer className="w-3.5 h-3.5 text-stone-500" />
@@ -239,17 +265,35 @@ export function DDTCalculator({
               </label>
               <span className="text-[10px] font-mono text-stone-500 uppercase">Kitchen</span>
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                step={tempUnit === 'F' ? 1 : 0.5}
-                value={activeAir}
-                onChange={(e) => handleAirChange(parseFloat(e.target.value) || 0)}
-                className="w-full text-2xl font-serif font-bold text-stone-900 bg-white px-3 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-sm font-semibold">
-                °{tempUnit}
-              </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleAirChange(roundVal(activeAir - step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Decrease room temperature"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  step={step}
+                  value={activeAir}
+                  onChange={(e) => handleAirChange(parseFloat(e.target.value) || 0)}
+                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 bg-white px-2 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                />
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
+                  °{tempUnit}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAirChange(roundVal(activeAir + step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Increase room temperature"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
             <p className="text-[11px] text-stone-500">
               Current ambient temperature of your kitchen or proofing area.
@@ -257,7 +301,7 @@ export function DDTCalculator({
           </div>
 
           {/* Input 3: Flour Temp */}
-          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2">
+          <div className="p-4 bg-stone-50/80 rounded-2xl border border-stone-200/90 space-y-2.5">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-stone-900 flex items-center gap-1.5">
                 <Thermometer className="w-3.5 h-3.5 text-amber-700" />
@@ -266,26 +310,44 @@ export function DDTCalculator({
               <button
                 type="button"
                 onClick={() => handleFlourChange(activeAir)}
-                className="text-[10px] text-amber-700 hover:text-amber-800 font-semibold underline"
+                className="text-[10px] text-amber-700 hover:text-amber-800 font-semibold underline p-1 -m-1"
                 title="Pantry flour is typically equal to room temperature"
               >
-                Match Air Temp
+                Match Air
               </button>
             </div>
-            <div className="relative">
-              <input
-                type="number"
-                step={tempUnit === 'F' ? 1 : 0.5}
-                value={activeFlour}
-                onChange={(e) => handleFlourChange(parseFloat(e.target.value) || 0)}
-                className="w-full text-2xl font-serif font-bold text-stone-900 bg-white px-3 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-sm font-semibold">
-                °{tempUnit}
-              </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => handleFlourChange(roundVal(activeFlour - step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Decrease flour temperature"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <div className="relative flex-1">
+                <input
+                  type="number"
+                  step={step}
+                  value={activeFlour}
+                  onChange={(e) => handleFlourChange(parseFloat(e.target.value) || 0)}
+                  className="w-full text-center text-xl sm:text-2xl font-serif font-bold text-stone-900 bg-white px-2 py-2 rounded-xl border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none"
+                />
+                <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs sm:text-sm font-semibold pointer-events-none">
+                  °{tempUnit}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleFlourChange(roundVal(activeFlour + step))}
+                className="w-10 h-10 rounded-xl bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                aria-label="Increase flour temperature"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
             <p className="text-[11px] text-stone-500">
-              Probe your dry flour bag. If stored in a pantry, it usually equals room temp.
+              Probe dry flour bag. If in pantry, it usually equals room temp.
             </p>
           </div>
         </div>
@@ -298,7 +360,7 @@ export function DDTCalculator({
                 type="checkbox"
                 checked={includeStarter}
                 onChange={(e) => setIncludeStarter(e.target.checked)}
-                className="w-4 h-4 text-amber-600 rounded border-stone-300 focus:ring-amber-500"
+                className="w-4 h-4 accent-amber-600 rounded border-stone-300 cursor-pointer"
               />
               <span>Include Sourdough Starter / Levain (4-Factor Formula)</span>
             </label>
@@ -322,23 +384,39 @@ export function DDTCalculator({
                   Ripe starter accounts for ~20% of dough weight. If refreshed on counter, it matches room temp.
                 </div>
               </div>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative w-32">
+              <div className="flex items-center gap-1.5 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={() => handleStarterChange(roundVal(activeStarter - step))}
+                  className="w-9 h-9 rounded-lg bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                  aria-label="Decrease Starter Temp"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <div className="relative w-28 flex-1 sm:flex-none">
                   <input
                     type="number"
-                    step={tempUnit === 'F' ? 1 : 0.5}
+                    step={step}
                     value={activeStarter}
                     onChange={(e) => handleStarterChange(parseFloat(e.target.value) || 0)}
-                    className="w-full text-base font-mono font-bold bg-white px-3 py-1.5 rounded-lg border border-stone-300 text-stone-900"
+                    className="w-full text-center text-base font-mono font-bold bg-white px-2 py-1.5 rounded-lg border border-stone-300 text-stone-900"
                   />
-                  <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs">
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 font-mono text-xs pointer-events-none">
                     °{tempUnit}
                   </span>
                 </div>
                 <button
                   type="button"
+                  onClick={() => handleStarterChange(roundVal(activeStarter + step))}
+                  className="w-9 h-9 rounded-lg bg-white border border-stone-300 flex items-center justify-center text-stone-700 active:scale-95 hover:bg-stone-100 shadow-sm shrink-0"
+                  aria-label="Increase Starter Temp"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
                   onClick={() => handleStarterChange(activeAir)}
-                  className="px-2 py-1.5 bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 rounded-lg text-xs shrink-0"
+                  className="px-2.5 py-2 bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 rounded-lg text-xs shrink-0 font-medium active:scale-95"
                 >
                   Match Room
                 </button>
@@ -414,11 +492,11 @@ export function DDTCalculator({
               <button
                 type="button"
                 onClick={() => onApplyDDTToDoughTemp(calculation.waterTempF >= 0 ? ddtF : 75)}
-                className="px-4 py-2.5 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-transform active:scale-95 shrink-0"
+                className="w-full sm:w-auto px-5 py-3 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-95 shrink-0 min-h-[48px]"
               >
                 <Sparkles className="w-4 h-4 text-amber-400" />
                 Apply {activeDDT}°{tempUnit} as Dough Temp
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-4 h-4" />
               </button>
             )}
           </div>
@@ -429,17 +507,27 @@ export function DDTCalculator({
           </div>
 
           {/* Mathematical Proof & Formula Breakdown */}
-          <div className="pt-2 border-t border-stone-200/60 text-xs font-mono text-stone-600">
-            <div className="text-[11px] font-sans font-semibold text-stone-700 mb-1">
-              Mathematical Breakdown ({calculation.factorsCount}-Factor Hand Mix Formula):
-            </div>
-            <div className="p-2.5 bg-white/60 rounded-lg overflow-x-auto text-[11px] leading-relaxed">
-              <span>Implied Water Temp = ({calculation.factorsCount} × {activeDDT}°) - ({activeAir}° air + {activeFlour}° flour{includeStarter ? ` + ${activeStarter}° starter` : ''}{activeFriction ? ` + ${activeFriction}° friction` : ''})</span>
-              <br />
-              <span className="font-bold text-stone-900">
-                = {calculation.totalTempSum}° - {calculation.subtotalKnown}° = {calculation.waterTemp}°{tempUnit}
+          <div className="pt-2 border-t border-stone-200/60">
+            <button
+              type="button"
+              onClick={() => setShowBreakdown(!showBreakdown)}
+              className="flex items-center justify-between w-full text-[11px] font-sans font-semibold text-stone-700 py-1 cursor-pointer"
+            >
+              <span>Mathematical Breakdown ({calculation.factorsCount}-Factor Hand Mix Formula)</span>
+              <span className="flex items-center gap-1 text-stone-500 text-xs font-normal">
+                {showBreakdown ? 'Hide' : 'Show'}
+                {showBreakdown ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </span>
-            </div>
+            </button>
+            {showBreakdown && (
+              <div className="mt-1.5 p-2.5 bg-white/70 rounded-lg overflow-x-auto text-[11px] font-mono leading-relaxed text-stone-600 border border-stone-200/40">
+                <span>Implied Water Temp = ({calculation.factorsCount} × {activeDDT}°) - ({activeAir}° air + {activeFlour}° flour{includeStarter ? ` + ${activeStarter}° starter` : ''}{activeFriction ? ` + ${activeFriction}° friction` : ''})</span>
+                <br />
+                <span className="font-bold text-stone-900">
+                  = {calculation.totalTempSum}° - {calculation.subtotalKnown}° = {calculation.waterTemp}°{tempUnit}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

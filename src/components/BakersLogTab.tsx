@@ -147,24 +147,26 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <div className="flex items-center gap-2 self-start sm:self-auto mt-2 sm:mt-0">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         onCalibrateNewBake(session);
                       }}
-                      className="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 border border-amber-500/30 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                      className="px-3.5 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 border border-amber-500/30 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
                       title="Calibrate next bake based on these results"
                     >
                       <Sparkles className="w-3.5 h-3.5 text-amber-700" />
                       Calibrate Next Bake
                     </button>
-                    {isExpanded ? (
-                      <ChevronUp className="w-5 h-5 text-stone-400" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-stone-400" />
-                    )}
+                    <div className="p-2 text-stone-400">
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-stone-500" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-stone-500" />
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -260,31 +262,29 @@ Calibration: ${session.calibrationAdjustmentPercent ? `${session.calibrationAdju
                     </div>
 
                     {/* Action Bar */}
-                    <div className="flex items-center justify-between pt-2">
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleCopyMarkdown(session)}
-                          className="px-3 py-1.5 bg-white hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-colors"
-                        >
-                          {copiedId === session.id ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-emerald-600" />
-                              Copied Markdown
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5 text-stone-500" />
-                              Copy Worksheet
-                            </>
-                          )}
-                        </button>
-                      </div>
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-stone-200/60">
+                      <button
+                        type="button"
+                        onClick={() => handleCopyMarkdown(session)}
+                        className="px-4 py-2.5 bg-white hover:bg-stone-100 border border-stone-200 text-stone-700 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all active:scale-95 min-h-[40px]"
+                      >
+                        {copiedId === session.id ? (
+                          <>
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
+                            Copied Markdown
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-3.5 h-3.5 text-stone-500" />
+                            Copy Worksheet
+                          </>
+                        )}
+                      </button>
 
                       <button
                         type="button"
                         onClick={() => onDeleteSession(session.id)}
-                        className="text-rose-600 hover:text-rose-700 text-xs flex items-center gap-1"
+                        className="px-3 py-2 text-rose-600 hover:text-rose-700 text-xs font-medium flex items-center gap-1.5 active:scale-95 min-h-[40px] rounded-lg"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                         Delete Log

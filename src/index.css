@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 @layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overscroll-behavior-y: none;
   }
   .font-serif {
     font-family: 'Fraunces', Georgia, serif;
@@ -10,6 +16,97 @@
   .font-mono {
     font-family: 'JetBrains Mono', monospace;
   }
+
+  button, a, input, select, textarea {
+    touch-action: manipulation;
+  }
+
+  /* Visible focus for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--color-amber-500);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+/* Custom range slider — warm amber thumb, track fill, touch-optimized */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 10px;
+  border-radius: 9999px;
+  background:
+    linear-gradient(to right, var(--color-amber-600) 0%, var(--color-amber-600) var(--fill, 50%), var(--color-stone-200) var(--fill, 50%));
+  outline-offset: 4px;
+  cursor: pointer;
+  touch-action: pan-x;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3.5px solid var(--color-amber-600);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 0.25), 0 0 0 5px rgb(217 119 6 / 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+input[type='range']::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.3), 0 0 0 7px rgb(217 119 6 / 0.18);
+}
+input[type='range']::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.35), 0 0 0 9px rgb(217 119 6 / 0.25);
+}
+input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid var(--color-amber-600);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+}
+input[type='range']::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-stone-200);
+}
+input[type='range']::-moz-range-progress {
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--color-amber-600);
+}
+
+/* Tab-switch entrance: gentle rise + fade */
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.view-in {
+  animation: view-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fade-in 0.25s ease both;
+}
+
+/* Smooth, layered card shadow recipe */
+.card-shadow {
+  box-shadow:
+    0 1px 2px rgb(28 25 23 / 0.05),
+    0 4px 12px -2px rgb(28 25 23 / 0.06);
 }
 
 /* Custom subtle scrollbars */
@@ -19,4 +116,22 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-stone-300);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-stone-400);
+  background-clip: content-box;
 }

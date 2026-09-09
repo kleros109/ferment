@@ -88,7 +88,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
             href="https://youtu.be/YdaBZfzT-QQ"
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md"
+            className="shrink-0 inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold transition-colors shadow-md w-full sm:w-auto min-h-[44px]"
           >
             <Play className="w-4 h-4 fill-current" />
             Watch Video (YouTube)
@@ -97,21 +97,25 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
 
         {/* Live Scorecard Meter */}
         <div className="p-4 bg-stone-800/90 rounded-xl border border-stone-700/80 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-stone-300">Sensory Readiness Score:</span>
-              <span className="font-mono text-lg font-bold text-amber-400">
-                {score} / {total} Criteria Met
-              </span>
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="text-[10px] sm:text-xs font-semibold text-stone-400 uppercase tracking-wider">
+                Sensory Readiness Score
+              </div>
+              <div className="font-mono text-xl sm:text-2xl font-bold text-amber-400 mt-0.5">
+                {score} <span className="text-xs sm:text-sm font-normal text-stone-400">/ {total} Criteria Met</span>
+              </div>
             </div>
-            <button
-              type="button"
-              onClick={() => setCheckedIds([])}
-              className="text-stone-400 hover:text-stone-200 text-xs flex items-center gap-1"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-            </button>
+            {score > 0 && (
+              <button
+                type="button"
+                onClick={() => setCheckedIds([])}
+                className="text-stone-300 hover:text-white text-xs flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-800 border border-stone-700 active:scale-95 transition-all"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset
+              </button>
+            )}
           </div>
 
           <div className="w-full bg-stone-900 h-3 rounded-full overflow-hidden border border-stone-700">
@@ -121,9 +125,9 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
             />
           </div>
 
-          <div className={`p-3 rounded-lg border text-xs font-medium flex items-center justify-between ${status.color}`}>
+          <div className={`p-3 rounded-lg border text-xs font-medium flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 ${status.color}`}>
             <span>{status.message}</span>
-            <span className="font-bold font-mono uppercase tracking-wider text-[11px]">{status.label}</span>
+            <span className="font-bold font-mono uppercase tracking-wider text-[11px] shrink-0">{status.label}</span>
           </div>
         </div>
       </div>
@@ -133,9 +137,9 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
         <button
           type="button"
           onClick={() => setActiveCategory('all')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'all'
-              ? 'bg-stone-900 text-white'
+              ? 'bg-stone-900 text-white shadow-sm'
               : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
@@ -144,9 +148,9 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
         <button
           type="button"
           onClick={() => setActiveCategory('visual')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'visual'
-              ? 'bg-amber-600 text-white'
+              ? 'bg-amber-600 text-white shadow-sm'
               : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
@@ -156,9 +160,9 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
         <button
           type="button"
           onClick={() => setActiveCategory('tactile')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'tactile'
-              ? 'bg-amber-600 text-white'
+              ? 'bg-amber-600 text-white shadow-sm'
               : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
@@ -168,9 +172,9 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
         <button
           type="button"
           onClick={() => setActiveCategory('aroma')}
-          className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+          className={`px-3.5 py-2 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shrink-0 min-h-[40px] ${
             activeCategory === 'aroma'
-              ? 'bg-amber-600 text-white'
+              ? 'bg-amber-600 text-white shadow-sm'
               : 'bg-white text-stone-600 hover:bg-stone-100 border border-stone-200'
           }`}
         >
@@ -187,7 +191,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
             <div
               key={criterion.id}
               onClick={() => toggleCheck(criterion.id)}
-              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm relative ${
+              className={`p-5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm relative active:scale-[0.99] touch-manipulation select-none ${
                 isChecked
                   ? 'bg-amber-50/70 border-amber-500 shadow-md ring-1 ring-amber-400/40'
                   : 'bg-white border-stone-200 hover:border-stone-300'
@@ -202,7 +206,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
                 </div>
                 <button
                   type="button"
-                  className="text-amber-600 shrink-0"
+                  className="text-amber-600 shrink-0 pointer-events-none"
                   aria-label="Toggle criteria"
                 >
                   {isChecked ? (
@@ -224,7 +228,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
 
               <div className="mt-3 flex items-center justify-between text-[10px] font-mono text-stone-400">
                 <span className="capitalize">{criterion.category} Cue</span>
-                <span className="uppercase px-1.5 py-0.5 rounded bg-stone-100 text-stone-600">
+                <span className="uppercase px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 font-medium">
                   {criterion.importance}
                 </span>
               </div>
@@ -245,7 +249,7 @@ export function BulkOMaticTab({ onProceedToShape }: BulkOMaticTabProps) {
           <button
             type="button"
             onClick={onProceedToShape}
-            className="px-5 py-2.5 bg-white text-emerald-950 font-bold rounded-xl text-xs hover:bg-emerald-50 transition-colors shrink-0"
+            className="w-full sm:w-auto px-6 py-3 bg-white text-emerald-950 font-bold rounded-xl text-sm hover:bg-emerald-50 active:scale-95 transition-all shrink-0 min-h-[48px] flex items-center justify-center shadow-sm"
           >
             Go to Active Bake Shape Step
           </button>

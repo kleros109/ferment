@@ -52,11 +52,22 @@ export function Header({
 
           {/* Controls: Temp Unit Switcher & Quick Action */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {hasActiveSession && (
+              <button
+                type="button"
+                onClick={() => setCurrentTab('tracker')}
+                className="flex md:hidden items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold rounded-full bg-emerald-950/80 border border-emerald-500/50 text-emerald-300 animate-pulse shadow-xs"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                <span>Live Bake</span>
+              </button>
+            )}
+
             <div className="inline-flex rounded-lg p-1 bg-stone-800/90 border border-stone-700/60 shadow-inner">
               <button
                 type="button"
                 onClick={() => setTempUnit('F')}
-                className={`px-2.5 py-1 text-xs font-mono font-medium rounded transition-all ${
+                className={`px-2.5 py-1 text-xs font-mono font-medium rounded transition-all touch-manipulation ${
                   tempUnit === 'F'
                     ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
                     : 'text-stone-400 hover:text-stone-200'
@@ -67,7 +78,7 @@ export function Header({
               <button
                 type="button"
                 onClick={() => setTempUnit('C')}
-                className={`px-2.5 py-1 text-xs font-mono font-medium rounded transition-all ${
+                className={`px-2.5 py-1 text-xs font-mono font-medium rounded transition-all touch-manipulation ${
                   tempUnit === 'C'
                     ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
                     : 'text-stone-400 hover:text-stone-200'
@@ -92,8 +103,8 @@ export function Header({
           </div>
         </div>
 
-        {/* Navigation Tabs - Horizontally scrollable on mobile */}
-        <nav className="flex items-center space-x-1 overflow-x-auto no-scrollbar py-2 -mx-4 px-4 sm:mx-0 sm:px-0 border-t border-stone-800/60 text-xs sm:text-sm">
+        {/* Desktop Navigation Tabs (Mobile uses dedicated bottom nav) */}
+        <nav className="hidden md:flex items-center space-x-1 overflow-x-auto no-scrollbar py-2 border-t border-stone-800/60 text-xs sm:text-sm">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;

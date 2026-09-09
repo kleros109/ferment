@@ -1,16 +1,20 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type CSSProperties } from 'react';
 import {
   Thermometer,
   ArrowRight,
   Info,
   Layers,
   ChevronRight,
+  ChevronDown,
+  ChevronUp,
   RotateCcw,
   Sparkles,
   AlertTriangle,
   Play,
   Gauge,
-  Waves
+  Waves,
+  Minus,
+  Plus
 } from 'lucide-react';
 import { TempUnit } from '../types';
 import {
@@ -43,6 +47,8 @@ export function CalculatorTab({
 }: CalculatorTabProps) {
   const [activeMode, setActiveMode] = useState<'two-factor' | 'ddt'>(initialMode);
   const [ddtAppliedNotice, setDdtAppliedNotice] = useState<string | null>(null);
+  const [showMobileBannerInfo, setShowMobileBannerInfo] = useState<boolean>(false);
+  const [showMobileReferenceTable, setShowMobileReferenceTable] = useState<boolean>(false);
 
   // Dough temp state in Fahrenheit internally
   const [doughTempF, setDoughTempF] = useState<number>(75);
@@ -114,61 +120,69 @@ export function CalculatorTab({
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
-      {/* Top Banner: Core Two-Factor Philosophy */}
-      <div className="bg-gradient-to-r from-amber-900/90 via-stone-900 to-stone-900 rounded-2xl p-5 sm:p-6 border border-amber-800/40 text-stone-100 shadow-xl relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-mono font-medium mb-3 border border-amber-500/30">
-            <Sparkles className="w-3.5 h-3.5" />
-            The Sourdough Journey Fermentation Tools
+    <div className="space-y-5 max-w-5xl mx-auto pb-8">
+      {/* Top Banner: Core Two-Factor Philosophy (shown only in two-factor mode) */}
+      {activeMode === 'two-factor' && (
+        <div className="bg-gradient-to-r from-amber-950 via-stone-900 to-stone-900 rounded-2xl p-4 sm:p-6 border border-amber-800/40 text-stone-100 shadow-xl relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-mono font-medium border border-amber-500/30">
+                <Sparkles className="w-3 h-3 text-amber-400" />
+                <span>The Sourdough Journey</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMobileBannerInfo(!showMobileBannerInfo)}
+                className="sm:hidden text-xs text-amber-300 font-medium flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/5 border border-white/10"
+              >
+                <Info className="w-3.5 h-3.5" />
+                <span>{showMobileBannerInfo ? 'Hide' : 'About'}</span>
+              </button>
+            </div>
+
+            <h1 className="font-serif text-xl sm:text-3xl font-bold tracking-tight text-white mb-1">
+              Two-Factor Fermentation Calculator
+            </h1>
+
+            <p className={`text-stone-300 text-xs sm:text-sm max-w-2xl leading-relaxed ${showMobileBannerInfo ? 'block' : 'hidden sm:block'}`}>
+              Stop relying on <span className="text-amber-300 font-semibold italic">"let it double"</span>. Synchronize your bulk rise cutoff with internal dough temperature, and use the DDT calculator to hit your target mixed temperature every time.
+            </p>
           </div>
-          <h1 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white mb-2">
-            Fermentation Calculator & DDT Water Temperature
-          </h1>
-          <p className="text-stone-300 text-sm sm:text-base max-w-2xl leading-relaxed">
-            Stop relying on <span className="text-amber-300 font-semibold italic">"let it double"</span>. Hit your target dough temperature with the hand-mix DDT calculator, and synchronize your bulk rise cutoff with your exact dough temperature.
-          </p>
         </div>
-      </div>
+      )}
 
       {/* Mode Switcher: Two-Factor Fermentation vs DDT Water Calculator */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-stone-200/60 p-1.5 rounded-2xl border border-stone-300/60">
-        <div className="flex items-center gap-1.5 w-full sm:w-auto">
-          <button
-            type="button"
-            onClick={() => setActiveMode('two-factor')}
-            className={`flex-1 sm:flex-initial py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-              activeMode === 'two-factor'
-                ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            Two-Factor Fermentation Guide
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveMode('ddt')}
-            className={`flex-1 sm:flex-initial py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-              activeMode === 'ddt'
-                ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80'
-                : 'text-stone-600 hover:text-stone-900'
-            }`}
-          >
-            <Waves className="w-3.5 h-3.5 text-amber-600" />
-            Desired Dough Temp (DDT) Water Calculator
-          </button>
-        </div>
-
-        <span className="text-[11px] text-stone-500 font-mono hidden md:block px-2">
-          {activeMode === 'two-factor' ? 'Measure Temp → Read Target % Rise' : 'DDT + Air + Flour → Water Temp (Hand Mixed)'}
-        </span>
+      <div className="flex items-center gap-1.5 bg-stone-200/70 p-1.5 rounded-2xl border border-stone-300/70">
+        <button
+          type="button"
+          onClick={() => setActiveMode('two-factor')}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-manipulation ${
+            activeMode === 'two-factor'
+              ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80 font-bold'
+              : 'text-stone-600 hover:text-stone-900'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <span className="truncate">Two-Factor Rise Guide</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveMode('ddt')}
+          className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 touch-manipulation ${
+            activeMode === 'ddt'
+              ? 'bg-white text-stone-900 shadow-sm border border-stone-200/80 font-bold'
+              : 'text-stone-600 hover:text-stone-900'
+          }`}
+        >
+          <Waves className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+          <span className="truncate">DDT Water Temp</span>
+        </button>
       </div>
 
       {ddtAppliedNotice && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-950 font-semibold flex items-center justify-between shadow-sm animate-fade-in">
+        <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-xs text-emerald-950 font-semibold flex items-center justify-between shadow-sm animate-fade-in">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-600" />
+            <Sparkles className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{ddtAppliedNotice}</span>
           </div>
           <button
@@ -195,39 +209,59 @@ export function CalculatorTab({
         />
       ) : (
         /* Main Grid: Inputs on Left, Vessel Visualizer on Right */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
         
-        {/* Left Column: Factor 1 & Factor 2 Controls */}
+        {/* Left Column: Factor 1 & Factor 2 Controls + Results */}
         <div className="lg:col-span-7 space-y-5">
           
           {/* Factor 1: Dough Temperature */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-100 text-amber-800">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="p-2.5 rounded-xl bg-amber-100 text-amber-800 shrink-0">
                   <Thermometer className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-stone-900 text-base sm:text-lg">
+                  <h2 className="font-semibold text-stone-900 text-sm sm:text-base">
                     Factor 1: Dough Temperature
                   </h2>
-                  <p className="text-xs text-stone-500">
-                    Measure at dough center using a digital probe thermometer
+                  <p className="text-[11px] text-stone-500 hidden sm:block">
+                    Measure center dough temp with an instant-read probe
                   </p>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="font-mono text-3xl font-extrabold text-amber-700">
-                  {displayTemp}°{tempUnit}
-                </span>
-                <p className="text-[11px] text-stone-500 font-mono">
-                  ({tempUnit === 'F' ? `${fahrenheitToCelsius(doughTempF)}°C` : `${doughTempF}°F`})
-                </p>
+
+              {/* Stepper & Big Temperature Readout */}
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleTempSlider(Math.max(minTemp, displayTemp - displayTempStep))}
+                  className="w-9 h-9 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-amber-100 active:scale-95 border border-stone-200 text-stone-800 font-mono text-xl font-bold flex items-center justify-center transition-all shadow-xs touch-manipulation"
+                  aria-label="Decrease temperature"
+                >
+                  <Minus className="w-4 h-4" />
+                </button>
+                <div className="text-center min-w-[4.8rem] sm:min-w-[5.8rem]">
+                  <span className="font-mono text-2xl sm:text-3xl font-black text-amber-700 leading-none">
+                    {displayTemp}°{tempUnit}
+                  </span>
+                  <p className="text-[10px] text-stone-400 font-mono">
+                    ({tempUnit === 'F' ? `${fahrenheitToCelsius(doughTempF)}°C` : `${doughTempF}°F`})
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleTempSlider(Math.min(maxTemp, displayTemp + displayTempStep))}
+                  className="w-9 h-9 rounded-xl bg-stone-100 hover:bg-stone-200 active:bg-amber-100 active:scale-95 border border-stone-200 text-stone-800 font-mono text-xl font-bold flex items-center justify-center transition-all shadow-xs touch-manipulation"
+                  aria-label="Increase temperature"
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
             </div>
 
             {/* Interactive Slider */}
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <input
                 type="range"
                 min={minTemp}
@@ -235,18 +269,21 @@ export function CalculatorTab({
                 step={displayTempStep}
                 value={displayTemp}
                 onChange={(e) => handleTempSlider(parseFloat(e.target.value))}
-                className="w-full h-2.5 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-amber-600"
+                style={{ '--fill': `${((displayTemp - minTemp) / (maxTemp - minTemp)) * 100}%` } as CSSProperties}
+                className="w-full cursor-pointer touch-manipulation"
+                aria-label="Dough temperature"
               />
-              <div className="flex justify-between text-[11px] text-stone-600 font-mono">
-                <span>65°F (18°C) • Cold</span>
-                <span>70°F (21°C)</span>
-                <span>75°F (24°C)</span>
-                <span>80°F (27°C) • Warm</span>
+              <div className="flex justify-between text-[10px] sm:text-[11px] text-stone-500 font-mono select-none">
+                <span>{tempUnit === 'F' ? '65°F (Cold)' : '18°C'}</span>
+                <span>{tempUnit === 'F' ? '70°F' : '21°C'}</span>
+                <span className="font-bold text-amber-800">{tempUnit === 'F' ? '75°F' : '24°C'}</span>
+                <span>{tempUnit === 'F' ? '78°F' : '25.5°C'}</span>
+                <span>{tempUnit === 'F' ? '82°F (Warm)' : '28°C'}</span>
               </div>
             </div>
 
             {/* Quick Temp Preset Pills */}
-            <div className="flex flex-wrap gap-2 pt-1">
+            <div className="grid grid-cols-5 gap-1.5 pt-1">
               {[65, 70, 75, 78, 80].map((tF) => {
                 const isSelected = Math.round(doughTempF) === tF;
                 const displayValue = tempUnit === 'F' ? `${tF}°F` : `${fahrenheitToCelsius(tF)}°C`;
@@ -255,10 +292,10 @@ export function CalculatorTab({
                     key={tF}
                     type="button"
                     onClick={() => setDoughTempF(tF)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium font-mono transition-all ${
+                    className={`py-2 rounded-xl text-xs font-mono font-bold transition-all text-center touch-manipulation ${
                       isSelected
-                        ? 'bg-amber-600 text-white shadow-sm font-semibold'
-                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200'
+                        ? 'bg-amber-600 text-white shadow-sm ring-1 ring-amber-500'
+                        : 'bg-stone-100 text-stone-700 hover:bg-stone-200 active:bg-stone-200'
                     }`}
                   >
                     {displayValue}
@@ -273,10 +310,10 @@ export function CalculatorTab({
               <button
                 type="button"
                 onClick={() => setActiveMode('ddt')}
-                className="inline-flex items-center gap-1.5 text-xs text-amber-700 hover:text-amber-900 font-semibold"
+                className="inline-flex items-center gap-1 text-xs text-amber-700 hover:text-amber-900 font-semibold touch-manipulation"
               >
                 <Waves className="w-3.5 h-3.5" />
-                Calculate Water Temp with DDT
+                <span>Calculate Water Temp</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -286,25 +323,25 @@ export function CalculatorTab({
               <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
                 <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-semibold">Warm Dough Rule: </span>
-                  Dough at {doughTempF}°F holds residual heat and ferments rapidly for 8–10 hours in the fridge. Stop early at {currentGuide.targetRise}% rise and inspect sensory cues!
+                  <span className="font-semibold">Warm Dough Warning: </span>
+                  Dough at {doughTempF}°F retains heat and continues fermenting rapidly in the fridge. Stop early at {currentGuide.targetRise}% rise!
                 </div>
               </div>
             )}
           </div>
 
           {/* Factor 2: Starting Volume & Flour Weight */}
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-stone-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-stone-100 text-stone-800">
+          <div className="bg-white rounded-2xl p-4 sm:p-6 border border-stone-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2.5 rounded-xl bg-stone-100 text-stone-800 shrink-0">
                   <Layers className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-semibold text-stone-900 text-base sm:text-lg">
+                  <h2 className="font-semibold text-stone-900 text-sm sm:text-base">
                     Factor 2: Starting Volume
                   </h2>
-                  <p className="text-xs text-stone-500">
+                  <p className="text-[11px] text-stone-500 hidden sm:block">
                     Leveled volume in milliliters after ingredients are combined
                   </p>
                 </div>
@@ -312,9 +349,9 @@ export function CalculatorTab({
               <button
                 type="button"
                 onClick={() => setUseShorthand(!useShorthand)}
-                className="text-xs text-amber-700 font-medium hover:underline flex items-center gap-1"
+                className="text-xs text-amber-700 font-medium hover:underline flex items-center gap-1 touch-manipulation"
               >
-                {useShorthand ? 'Switch to manual mL' : 'Use Flour × 1.5 shorthand'}
+                {useShorthand ? 'Enter Manual mL' : 'Use Flour × 1.5'}
               </button>
             </div>
 
@@ -322,9 +359,16 @@ export function CalculatorTab({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-medium text-stone-700">
-                    Total Dry Flour Weight in Recipe:
+                    Total Dry Flour Weight:
                   </label>
                   <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => handleFlourChange(Math.max(200, flourGrams - 50))}
+                      className="w-8 h-8 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold font-mono flex items-center justify-center border border-stone-200 touch-manipulation"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
                     <input
                       type="number"
                       min={200}
@@ -332,9 +376,16 @@ export function CalculatorTab({
                       step={50}
                       value={flourGrams}
                       onChange={(e) => handleFlourChange(Math.max(0, parseInt(e.target.value) || 0))}
-                      className="w-24 px-2.5 py-1 text-right font-mono font-bold text-stone-900 border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-20 px-2 py-1 text-center font-mono font-bold text-stone-900 border border-stone-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
-                    <span className="text-xs text-stone-500">grams</span>
+                    <button
+                      type="button"
+                      onClick={() => handleFlourChange(Math.min(4000, flourGrams + 50))}
+                      className="w-8 h-8 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold font-mono flex items-center justify-center border border-stone-200 touch-manipulation"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="text-xs text-stone-500 font-medium">grams</span>
                   </div>
                 </div>
 
@@ -343,45 +394,45 @@ export function CalculatorTab({
                   <button
                     type="button"
                     onClick={() => handleFlourChange(500)}
-                    className={`p-2 rounded-lg text-xs text-center border transition-all ${
+                    className={`py-2 px-2 rounded-xl text-xs text-center border transition-all touch-manipulation ${
                       flourGrams === 500
-                        ? 'bg-stone-900 text-white border-stone-900'
-                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                        ? 'bg-stone-900 text-white border-stone-900 font-bold shadow-xs'
+                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 active:bg-stone-100'
                     }`}
                   >
-                    <div className="font-semibold">1 Loaf</div>
-                    <div className="text-[10px] opacity-80">500g = 750 mL</div>
+                    <div className="font-bold">1 Loaf</div>
+                    <div className="text-[10px] opacity-75 font-mono">500g = 750 mL</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleFlourChange(1000)}
-                    className={`p-2 rounded-lg text-xs text-center border transition-all ${
+                    className={`py-2 px-2 rounded-xl text-xs text-center border transition-all touch-manipulation ${
                       flourGrams === 1000
-                        ? 'bg-stone-900 text-white border-stone-900'
-                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                        ? 'bg-stone-900 text-white border-stone-900 font-bold shadow-xs'
+                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 active:bg-stone-100'
                     }`}
                   >
-                    <div className="font-semibold">2 Loaves</div>
-                    <div className="text-[10px] opacity-80">1,000g = 1,500 mL</div>
+                    <div className="font-bold">2 Loaves</div>
+                    <div className="text-[10px] opacity-75 font-mono">1,000g = 1,500 mL</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleFlourChange(1500)}
-                    className={`p-2 rounded-lg text-xs text-center border transition-all ${
+                    className={`py-2 px-2 rounded-xl text-xs text-center border transition-all touch-manipulation ${
                       flourGrams === 1500
-                        ? 'bg-stone-900 text-white border-stone-900'
-                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100'
+                        ? 'bg-stone-900 text-white border-stone-900 font-bold shadow-xs'
+                        : 'bg-stone-50 text-stone-700 border-stone-200 hover:bg-stone-100 active:bg-stone-100'
                     }`}
                   >
-                    <div className="font-semibold">3 Loaves</div>
-                    <div className="text-[10px] opacity-80">1,500g = 2,250 mL</div>
+                    <div className="font-bold">3 Loaves</div>
+                    <div className="text-[10px] opacity-75 font-mono">1,500g = 2,250 mL</div>
                   </button>
                 </div>
 
-                <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/60 text-xs text-amber-900 flex items-center justify-between">
-                  <span>Tom's Formula: {flourGrams}g × 1.5</span>
-                  <span className="font-mono font-bold text-amber-800 text-sm">
-                    = {startingVolumeMl} mL Initial Volume
+                <div className="p-3 bg-amber-50/70 rounded-xl border border-amber-200/70 text-xs text-amber-950 flex items-center justify-between">
+                  <span className="text-stone-600">Shorthand Formula ({flourGrams}g × 1.5):</span>
+                  <span className="font-mono font-bold text-amber-900 text-sm">
+                    = {startingVolumeMl} mL Starting Volume
                   </span>
                 </div>
               </div>
@@ -391,6 +442,17 @@ export function CalculatorTab({
                   Measured Starting Volume (in container mL markers):
                 </label>
                 <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const v = Math.max(200, startingVolumeMl - 25);
+                      setStartingVolumeMl(v);
+                      setCurrentDoughVolume(v);
+                    }}
+                    className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-mono font-bold flex items-center justify-center border border-stone-200 touch-manipulation"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
                   <input
                     type="number"
                     min={200}
@@ -402,8 +464,19 @@ export function CalculatorTab({
                       setStartingVolumeMl(v);
                       setCurrentDoughVolume(v);
                     }}
-                    className="w-full px-3 py-2 font-mono font-bold text-stone-900 border border-stone-300 rounded-lg text-base focus:outline-none focus:ring-2 focus:ring-amber-500"
+                    className="flex-1 px-3 py-2 font-mono font-bold text-center text-stone-900 border border-stone-300 rounded-xl text-base focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const v = Math.min(5000, startingVolumeMl + 25);
+                      setStartingVolumeMl(v);
+                      setCurrentDoughVolume(v);
+                    }}
+                    className="w-10 h-10 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 font-mono font-bold flex items-center justify-center border border-stone-200 touch-manipulation"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
                   <span className="text-sm font-semibold text-stone-600">mL</span>
                 </div>
               </div>
@@ -411,43 +484,43 @@ export function CalculatorTab({
           </div>
 
           {/* Results Card: Target % Rise & Cutoff Volume */}
-          <div className="bg-stone-900 text-stone-100 rounded-2xl p-5 sm:p-6 border border-stone-800 shadow-lg space-y-4">
+          <div className="bg-gradient-to-br from-stone-900 via-stone-900 to-stone-950 text-stone-100 rounded-2xl p-5 sm:p-6 border border-stone-800 shadow-lg space-y-4">
             <div className="flex items-center justify-between border-b border-stone-800 pb-3">
-              <span className="text-xs font-mono uppercase tracking-wider text-amber-400">
+              <span className="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">
                 Calculated Fermentation Target
               </span>
               <span className="text-xs text-stone-400 font-mono">
-                {currentGuide.approxHours} (window)
+                {currentGuide.approxHours} window
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700/60">
-                <div className="text-xs text-stone-400 mb-1">Target Rise</div>
-                <div className="font-mono text-3xl sm:text-4xl font-black text-amber-400">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="p-3.5 bg-stone-800/80 rounded-2xl border border-stone-700/60 flex flex-col justify-between">
+                <div className="text-xs text-stone-400 font-medium mb-1">Target % Rise</div>
+                <div className="font-mono text-3xl sm:text-4xl font-black text-amber-400 leading-none">
                   +{currentGuide.targetRise}%
                 </div>
-                <div className="text-[11px] text-stone-400 mt-1">
+                <div className="text-[10px] text-stone-400 mt-2 font-mono">
                   At {displayTemp}°{tempUnit} dough temp
                 </div>
               </div>
 
-              <div className="p-3 bg-stone-800/80 rounded-xl border border-stone-700/60">
-                <div className="text-xs text-stone-400 mb-1">Cutoff Volume</div>
-                <div className="font-mono text-3xl sm:text-4xl font-black text-emerald-400">
+              <div className="p-3.5 bg-stone-800/80 rounded-2xl border border-stone-700/60 flex flex-col justify-between">
+                <div className="text-xs text-stone-400 font-medium mb-1">Cutoff Volume</div>
+                <div className="font-mono text-3xl sm:text-4xl font-black text-emerald-400 leading-none">
                   {targetCalc.rounded}
-                  <span className="text-lg font-normal text-stone-300 ml-1">mL</span>
+                  <span className="text-sm font-normal text-stone-300 ml-1">mL</span>
                 </div>
-                <div className="text-[11px] text-stone-400 mt-1">
-                  Exact: {targetCalc.exact} mL (rounded to 50mL)
+                <div className="text-[10px] text-stone-400 mt-2 font-mono">
+                  Exact: {targetCalc.exact} mL
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-2">
-              <div className="text-xs text-stone-400 flex items-center gap-1.5">
-                <Info className="w-3.5 h-3.5 text-amber-400" />
-                <span>Mark vessel at <strong className="text-white">{targetCalc.rounded} mL</strong></span>
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
+              <div className="text-xs text-stone-300 flex items-center gap-1.5">
+                <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span>Mark container at <strong className="text-white font-mono">{targetCalc.rounded} mL</strong> cutoff</span>
               </div>
               
               {onStartBakeWithValues && (
@@ -462,17 +535,17 @@ export function CalculatorTab({
                       targetVolumeMl: targetCalc.rounded,
                     })
                   }
-                  className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold rounded-lg text-xs flex items-center gap-1.5 transition-colors shadow-sm"
+                  className="w-full sm:w-auto px-4 py-3 bg-amber-500 hover:bg-amber-400 active:scale-95 text-stone-950 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-md touch-manipulation"
                 >
                   <Play className="w-3.5 h-3.5 fill-current" />
-                  Track Live Bake
+                  <span>Start & Track Live Bake</span>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Quick Temperature Reference Table Preview */}
-          <div className="bg-white rounded-2xl p-5 border border-stone-200 shadow-sm space-y-3">
+          {/* Desktop Only: Quick Temperature Reference Table */}
+          <div className="hidden lg:block bg-white rounded-2xl p-5 border border-stone-200 shadow-xs space-y-3">
             <h3 className="text-sm font-semibold text-stone-900 flex items-center justify-between">
               <span>The Sourdough Journey Temping Guide (2024)</span>
               <span className="text-xs font-normal text-stone-500">16 Reference Temperatures</span>
@@ -502,7 +575,7 @@ export function CalculatorTab({
                           {entry.tempF}°F / {entry.tempC}°C
                         </td>
                         <td className="p-2 text-amber-700 font-bold">
-                          {entry.targetRise}%
+                          +{entry.targetRise}%
                         </td>
                         <td className="p-2 text-stone-500">
                           {entry.approxHours}
@@ -610,10 +683,28 @@ export function CalculatorTab({
 
             {/* Current Volume Interactive Slider */}
             {!isDomed ? (
-              <div className="space-y-1 pt-1">
-                <div className="flex justify-between text-xs text-stone-600">
-                  <span>Current Volume:</span>
-                  <span className="font-mono font-bold text-stone-900">{currentDoughVolume} mL</span>
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-stone-600 font-medium">Current Measured Volume:</span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentDoughVolume(Math.max(startingVolumeMl, currentDoughVolume - 25))}
+                      className="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold flex items-center justify-center border border-stone-200 touch-manipulation"
+                      aria-label="Decrease volume"
+                    >
+                      <Minus className="w-3 h-3" />
+                    </button>
+                    <span className="font-mono font-black text-sm text-stone-900 min-w-[3.5rem] text-center">{currentDoughVolume} mL</span>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentDoughVolume(Math.min(4000, currentDoughVolume + 25))}
+                      className="w-7 h-7 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold flex items-center justify-center border border-stone-200 touch-manipulation"
+                      aria-label="Increase volume"
+                    >
+                      <Plus className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
                 <input
                   type="range"
@@ -622,7 +713,11 @@ export function CalculatorTab({
                   step={25}
                   value={currentDoughVolume}
                   onChange={(e) => setCurrentDoughVolume(parseInt(e.target.value))}
-                  className="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer accent-stone-800"
+                  style={{
+                    '--fill': `${((currentDoughVolume - startingVolumeMl) / (Math.max(startingVolumeMl * 2.2, targetCalc.rounded + 200) - startingVolumeMl)) * 100}%`,
+                  } as CSSProperties}
+                  className="w-full cursor-pointer touch-manipulation"
+                  aria-label="Current dough volume"
                 />
               </div>
             ) : null}
@@ -635,12 +730,12 @@ export function CalculatorTab({
               </div>
               <div className="w-full bg-stone-100 rounded-full h-3 overflow-hidden border border-stone-200">
                 <div
-                  className={`h-full transition-all duration-300 ${
+                  className={`h-full rounded-full transition-all duration-500 ease-out ${
                     progressToTarget >= 100
-                      ? 'bg-emerald-500 animate-pulse'
+                      ? 'bg-gradient-to-r from-emerald-500 to-emerald-400 animate-pulse'
                       : progressToTarget >= 80
-                      ? 'bg-amber-500'
-                      : 'bg-stone-700'
+                      ? 'bg-gradient-to-r from-amber-500 to-amber-400'
+                      : 'bg-gradient-to-r from-stone-700 to-amber-600/80'
                   }`}
                   style={{ width: `${progressToTarget}%` }}
                 />
@@ -660,7 +755,7 @@ export function CalculatorTab({
                     type="checkbox"
                     checked={isDomed}
                     onChange={(e) => setIsDomed(e.target.checked)}
-                    className="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 border-stone-300"
+                    className="w-4 h-4 rounded accent-amber-600 border-stone-300 cursor-pointer"
                   />
                   <span>Dough is Domed on Top (Step 4 FAQ)</span>
                 </label>
@@ -703,8 +798,8 @@ export function CalculatorTab({
           </div>
 
           {/* Temperature Drift Advisor Card */}
-          <div className="bg-stone-50 rounded-2xl p-5 border border-stone-200 space-y-3">
-            <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowDriftAdvisor(!showDriftAdvisor)}>
+          <div className="bg-stone-50 rounded-2xl p-4 sm:p-5 border border-stone-200 space-y-3">
+            <div className="flex items-center justify-between cursor-pointer touch-manipulation" onClick={() => setShowDriftAdvisor(!showDriftAdvisor)}>
               <div className="flex items-center gap-2">
                 <Gauge className="w-4 h-4 text-amber-600" />
                 <span className="text-xs font-semibold text-stone-800">
@@ -745,6 +840,74 @@ export function CalculatorTab({
                 <div className="p-2.5 bg-amber-100/60 rounded-lg text-amber-950 font-medium text-[11px]">
                   Advice: If ending dough reaches {roomTempF}°F, adjust your target rise from {getGuideForTemperature(mixedTempF).targetRise}% up to {getGuideForTemperature(roomTempF).targetRise}%.
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Only: Quick Temperature Reference Table Accordion */}
+          <div className="block lg:hidden bg-white rounded-2xl border border-stone-200 shadow-xs overflow-hidden">
+            <button
+              type="button"
+              onClick={() => setShowMobileReferenceTable(!showMobileReferenceTable)}
+              className="w-full p-4 flex items-center justify-between text-left hover:bg-stone-50 active:bg-stone-50 transition-colors touch-manipulation"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span className="text-xs font-bold text-stone-900">
+                  TSJ 2024 Reference Table (16 Temperatures)
+                </span>
+              </div>
+              {showMobileReferenceTable ? (
+                <ChevronUp className="w-4 h-4 text-stone-500" />
+              ) : (
+                <ChevronDown className="w-4 h-4 text-stone-500" />
+              )}
+            </button>
+
+            {showMobileReferenceTable && (
+              <div className="p-4 pt-0 space-y-3 border-t border-stone-100">
+                <div className="overflow-x-auto max-h-56 overflow-y-auto border border-stone-200 rounded-xl">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-stone-100 text-stone-700 sticky top-0 font-medium">
+                      <tr>
+                        <th className="p-2.5">Temp</th>
+                        <th className="p-2.5">Target % Rise</th>
+                        <th className="p-2.5">Window</th>
+                        <th className="p-2.5">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-100 font-mono">
+                      {DOUGH_TEMP_GUIDE.map((entry) => {
+                        const isSelected = Math.round(doughTempF) === entry.tempF;
+                        return (
+                          <tr
+                            key={entry.tempF}
+                            onClick={() => setDoughTempF(entry.tempF)}
+                            className={`cursor-pointer transition-colors ${
+                              isSelected ? 'bg-amber-100/70 font-bold text-amber-900' : 'hover:bg-stone-50'
+                            }`}
+                          >
+                            <td className="p-2">
+                              {entry.tempF}°F / {entry.tempC}°C
+                            </td>
+                            <td className="p-2 text-amber-700 font-bold">
+                              +{entry.targetRise}%
+                            </td>
+                            <td className="p-2 text-stone-500 text-[11px]">
+                              {entry.approxHours}
+                            </td>
+                            <td className="p-2 font-sans text-[11px] text-amber-600 font-semibold">
+                              {isSelected ? '✓' : 'Set'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="text-[11px] text-stone-500 italic">
+                  * Recipe assumption: 90% Bread Flour, 10% Whole Wheat, 75% Hydration, 20% Starter, 2% Salt.
+                </p>
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Flame, Clock, Activity, ScrollText, BookOpen, Waves, MoreHorizontal, X, ChevronRight, Scale, Sparkles } from 'lucide-react';
 import { Header } from './components/Header';
 import { CalculatorTab } from './components/CalculatorTab';
 import { ActiveTrackerTab } from './components/ActiveTrackerTab';
@@ -7,7 +8,9 @@ import { RecipeTab } from './components/RecipeTab';
 import { BakersLogTab } from './components/BakersLogTab';
 import { ReferencesTab } from './components/ReferencesTab';
 import { BakeSession, TempUnit } from './types';
-import { getGuideForTemperature, calculateTargetVolume } from './utils/fermentCalculations';
+import { calculateTargetVolume, fahrenheitToCelsius } from './utils/fermentCalculations';
+
+const VALID_TABS = ['calculator', 'ddt', 'tracker', 'bulk-o-matic', 'recipe', 'log', 'references'];
 
 // Initial sample bake based on Appendix 2 from Tom Cucuzza's guide
 const INITIAL_LOGS: BakeSession[] = [
@@ -93,8 +96,41 @@ const DEFAULT_ACTIVE_SESSION: BakeSession = {
 };
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<string>('calculator');
+  const [currentTab, setCurrentTab] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (VALID_TABS.includes(hash)) return hash;
+    }
+    return 'calculator';
+  });
   const [tempUnit, setTempUnit] = useState<TempUnit>('F');
+  const [isMoreOpen, setIsMoreOpen] = useState<boolean>(false);
+  const [isMiniBannerDismissed, setIsMiniBannerDismissed] = useState<boolean>(false);
+
+  // Reset dismissed banner if user navigates to tracker
+  useEffect(() => {
+    if (currentTab === 'tracker') {
+      setIsMiniBannerDismissed(false);
+    }
+  }, [currentTab]);
+
+  // Sync currentTab with URL hash for easy mobile sharing & browser back/forward
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.replace(/^#/, '') !== currentTab) {
+      window.location.hash = currentTab;
+    }
+  }, [currentTab]);
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (VALID_TABS.includes(hash)) {
+        setCurrentTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []);
 
   // Load / save active session and log history from localStorage
   const [activeSession, setActiveSession] = useState<BakeSession>(() => {
@@ -228,7 +264,7 @@ export default function App() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-6 pb-16">
+      <main key={currentTab} className="view-in flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 pt-3 sm:pt-6 pb-36 sm:pb-20">
         {currentTab === 'calculator' && (
           <CalculatorTab
             tempUnit={tempUnit}
@@ -283,54 +319,227 @@ export default function App() {
         {currentTab === 'references' && <ReferencesTab />}
       </main>
 
-      {/* Mobile Sticky Navigation Bottom Bar for one-thumb switching */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-900/95 backdrop-blur-md border-t border-stone-800 px-2 py-1.5 flex items-center justify-around text-[10px] text-stone-400">
-        <button
-          type="button"
-          onClick={() => setCurrentTab('calculator')}
-          className={`flex flex-col items-center py-1 px-2 rounded-lg ${
-            currentTab === 'calculator' ? 'text-amber-400 font-bold' : 'text-stone-400'
-          }`}
-        >
-          <span>Calculator</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentTab('tracker')}
-          className={`flex flex-col items-center py-1 px-2 rounded-lg ${
-            currentTab === 'tracker' ? 'text-amber-400 font-bold' : 'text-stone-400'
-          }`}
-        >
-          <span>Active Bake</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentTab('bulk-o-matic')}
-          className={`flex flex-col items-center py-1 px-2 rounded-lg ${
-            currentTab === 'bulk-o-matic' ? 'text-amber-400 font-bold' : 'text-stone-400'
-          }`}
-        >
-          <span>Bulk-O-Matic</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentTab('log')}
-          className={`flex flex-col items-center py-1 px-2 rounded-lg ${
-            currentTab === 'log' ? 'text-amber-400 font-bold' : 'text-stone-400'
-          }`}
-        >
-          <span>Log</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setCurrentTab('references')}
-          className={`flex flex-col items-center py-1 px-2 rounded-lg ${
-            currentTab === 'references' ? 'text-amber-400 font-bold' : 'text-stone-400'
-          }`}
-        >
-          <span>References</span>
-        </button>
+      {/* Floating Active Bake Pill for Mobile (Solid, dismissible, high-contrast) */}
+      {activeSession.status === 'in_progress' && currentTab !== 'tracker' && !isMiniBannerDismissed && (
+        <div className="md:hidden fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-30 animate-fade-in">
+          <div className="w-full bg-stone-900 border border-amber-500/50 text-stone-100 p-2.5 rounded-2xl shadow-2xl flex items-center justify-between gap-2.5 ring-1 ring-black/40">
+            <button
+              type="button"
+              onClick={() => setCurrentTab('tracker')}
+              className="flex-1 flex items-center gap-2.5 min-w-0 text-left touch-manipulation"
+            >
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+              </span>
+              <div className="truncate">
+                <div className="text-xs font-bold text-white truncate">
+                  {activeSession.title || 'Country Loaf'}
+                </div>
+                <div className="text-[10px] text-amber-300 font-mono">
+                  {tempUnit === 'F' ? `${activeSession.endingDoughTemp}°F` : `${fahrenheitToCelsius(activeSession.endingDoughTemp)}°C`} • Target: +{activeSession.targetRisePercent}% ({activeSession.targetVolumeMl} mL)
+                </div>
+              </div>
+            </button>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setCurrentTab('tracker')}
+                className="flex items-center gap-1 text-[11px] font-semibold text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-xl border border-amber-500/30 touch-manipulation"
+              >
+                <span>Resume</span>
+                <ChevronRight className="w-3 h-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsMiniBannerDismissed(true)}
+                className="w-6 h-6 rounded-full text-stone-400 hover:text-white flex items-center justify-center touch-manipulation active:bg-stone-800"
+                aria-label="Dismiss banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Sticky Navigation Bottom Dock */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-900/95 backdrop-blur-xl border-t border-stone-800/80 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5 flex items-center justify-around shadow-2xl">
+        {[
+          { id: 'calculator', label: 'Calc', icon: Flame },
+          { id: 'ddt', label: 'DDT Water', icon: Waves },
+          { id: 'tracker', label: 'Active Bake', icon: Clock, hasPulse: activeSession.status === 'in_progress' },
+          { id: 'bulk-o-matic', label: 'Bulk Cues', icon: Activity },
+          { id: 'more', label: 'More', icon: MoreHorizontal, isMoreTrigger: true, isActive: ['recipe', 'log', 'references'].includes(currentTab) },
+        ].map((item) => {
+          const Icon = item.icon;
+          const isSelected = item.isMoreTrigger ? item.isActive : currentTab === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                if (item.isMoreTrigger) {
+                  setIsMoreOpen(true);
+                } else {
+                  setCurrentTab(item.id);
+                  setIsMoreOpen(false);
+                }
+              }}
+              className={`relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all touch-manipulation min-w-[56px] ${
+                isSelected
+                  ? 'text-amber-400 bg-amber-500/10 font-bold'
+                  : 'text-stone-400 active:text-stone-200 active:bg-stone-800/50'
+              }`}
+            >
+              <div className="relative">
+                <Icon className={`w-5 h-5 ${isSelected ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+                {item.hasPulse && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                )}
+                {item.isMoreTrigger && item.isActive && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400" />
+                )}
+              </div>
+              <span className={`text-[10px] mt-0.5 tracking-tight ${isSelected ? 'font-bold' : 'font-medium'}`}>
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
+
+      {/* Mobile "More" Drawer Bottom Sheet */}
+      {isMoreOpen && (
+        <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end animate-fade-in">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-stone-950/70 backdrop-blur-xs transition-opacity"
+            onClick={() => setIsMoreOpen(false)}
+          />
+
+          {/* Drawer content */}
+          <div className="relative bg-stone-900 border-t border-stone-800 rounded-t-3xl p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+            {/* Grab Handle */}
+            <div className="w-10 h-1 bg-stone-700 rounded-full mx-auto" />
+
+            <div className="flex items-center justify-between pb-2 border-b border-stone-800">
+              <div className="flex items-center gap-2">
+                <span className="font-serif text-lg font-bold text-amber-100">More Baking Tools</span>
+                <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                  TSJ 2024
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsMoreOpen(false)}
+                className="w-8 h-8 rounded-full bg-stone-800 text-stone-400 hover:text-white flex items-center justify-center"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTab('recipe');
+                  setIsMoreOpen(false);
+                }}
+                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                  currentTab === 'recipe'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
+                    : 'bg-stone-800/80 border-stone-700 text-stone-200 active:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-white">Recipe & Vessel Sizing</div>
+                    <div className="text-xs text-stone-400">Scale loaves & Cambro container sizing</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-stone-400" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTab('log');
+                  setIsMoreOpen(false);
+                }}
+                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                  currentTab === 'log'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
+                    : 'bg-stone-800/80 border-stone-700 text-stone-200 active:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                    <ScrollText className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-white">Baker's Notebook & Log</div>
+                    <div className="text-xs text-stone-400">Past bakes, crumb outcomes & calibration</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-stone-400" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentTab('references');
+                  setIsMoreOpen(false);
+                }}
+                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+                  currentTab === 'references'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
+                    : 'bg-stone-800/80 border-stone-700 text-stone-200 active:bg-stone-800'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                    <BookOpen className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-sm text-white">Guides & Masterclasses</div>
+                    <div className="text-xs text-stone-400">Tom Cucuzza's YouTube videos & research</div>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-stone-400" />
+              </button>
+            </div>
+
+            {/* Quick Temp Unit in Sheet */}
+            <div className="p-3 bg-stone-800/60 rounded-2xl border border-stone-700/60 flex items-center justify-between text-xs">
+              <span className="text-stone-300 font-medium">Temperature Display Unit:</span>
+              <div className="inline-flex rounded-lg p-1 bg-stone-900 border border-stone-700">
+                <button
+                  type="button"
+                  onClick={() => setTempUnit('F')}
+                  className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
+                    tempUnit === 'F' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
+                  }`}
+                >
+                  °F
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTempUnit('C')}
+                  className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all ${
+                    tempUnit === 'C' ? 'bg-amber-500 text-stone-950' : 'text-stone-400'
+                  }`}
+                >
+                  °C
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="border-t border-stone-200/80 bg-stone-50 py-6 text-center text-xs text-stone-500 max-w-7xl w-full mx-auto px-4">
