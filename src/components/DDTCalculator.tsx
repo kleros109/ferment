@@ -152,18 +152,18 @@ export function DDTCalculator({
   return (
     <Card className={`overflow-hidden ${className}`}>
       {/* Card Header */}
-      <div className="p-5 sm:p-6 bg-gradient-to-br from-stone-900 to-stone-950 text-stone-100 border-b border-stone-800">
+      <div className="p-5 sm:p-6 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-b border-stone-200/90 dark:border-stone-800">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1.5">
             <Badge variant="amber" className="text-[11px] font-mono">
               <Thermometer className="w-3.5 h-3.5" />
               Desired Dough Temperature (DDT)
             </Badge>
-            <h2 className="font-serif text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-              <Waves className="w-5 h-5 text-amber-400" />
+            <h2 className="font-serif text-xl sm:text-2xl font-bold text-stone-900 dark:text-white flex items-center gap-2">
+              <Waves className="w-5 h-5 text-amber-600 dark:text-amber-400" />
               Implied Water Temperature Calculator
             </h2>
-            <p className="text-xs sm:text-sm text-stone-300 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 max-w-xl leading-relaxed">
               Calculate the exact water temperature needed to hit your target dough temperature.
               Pre-calibrated for <strong>hand-mixed dough</strong> with zero mechanical friction.
             </p>

@@ -341,7 +341,7 @@ page MainPage {
                 <span className="font-bold text-stone-900 dark:text-stone-100 block">Option B: Deploy via Vercel CLI</span>
                 <p className="text-stone-600 dark:text-stone-300">
                   Run in your terminal:<br />
-                  <code className="block bg-stone-900 text-stone-100 p-1.5 rounded font-mono mt-1 text-[11px]">
+                  <code className="block bg-stone-100 dark:bg-stone-900 text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-800 p-1.5 rounded font-mono mt-1 text-[11px]">
                     npm i -g vercel<br />
                     vercel --prod
                   </code>
@@ -352,11 +352,11 @@ page MainPage {
         </Card>
 
         {/* Wasp Specification Code Box */}
-        <Card className="bg-stone-900 text-stone-100 border-stone-800 shadow-md overflow-hidden">
-          <div className="p-4 bg-stone-950/80 border-b border-stone-800 flex items-center justify-between">
+        <Card className="bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 border-stone-200 dark:border-stone-800 shadow-sm dark:shadow-md overflow-hidden">
+          <div className="p-4 bg-stone-100/90 dark:bg-stone-950/80 border-b border-stone-200 dark:border-stone-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Server className="w-4 h-4 text-amber-400" />
-              <span className="font-mono text-xs font-semibold text-stone-200">
+              <Server className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <span className="font-mono text-xs font-semibold text-stone-700 dark:text-stone-200">
                 main.wasp (Wasp Declarative Spec for Ferment)
               </span>
             </div>
@@ -369,7 +369,7 @@ page MainPage {
             >
               {copiedCode ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                   Copied Spec!
                 </>
               ) : (
@@ -381,12 +381,12 @@ page MainPage {
             </Button>
           </div>
 
-          <pre className="p-4 text-xs font-mono text-stone-300 overflow-x-auto max-h-72 overflow-y-auto leading-relaxed">
+          <pre className="p-4 text-xs font-mono text-stone-800 dark:text-stone-300 bg-white dark:bg-stone-900/60 overflow-x-auto max-h-72 overflow-y-auto leading-relaxed">
             <code>{waspCode}</code>
           </pre>
 
-          <div className="p-3 bg-stone-950/50 border-t border-stone-800 text-[11px] text-stone-400 flex items-center justify-between">
-            <span>To run locally with Wasp: <code className="text-amber-300 font-mono">wasp new FermentApp && wasp start</code></span>
+          <div className="p-3 bg-stone-100/70 dark:bg-stone-950/50 border-t border-stone-200 dark:border-stone-800 text-[11px] text-stone-600 dark:text-stone-400 flex items-center justify-between">
+            <span>To run locally with Wasp: <code className="text-amber-700 dark:text-amber-300 font-mono">wasp new FermentApp && wasp start</code></span>
             <a
               href="https://wasp.sh/docs"
               target="_blank"

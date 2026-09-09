@@ -512,13 +512,13 @@ export function CalculatorTab({
           </Card>
 
           {/* Results Card: Target % Rise & Cutoff Volume */}
-          <Card className="bg-stone-900 dark:bg-stone-950 text-stone-100 border-stone-800 shadow-md">
-            <CardHeader className="pb-3 border-b border-stone-800">
+          <Card className="bg-white dark:bg-stone-950 text-stone-900 dark:text-stone-100 border-stone-200/90 dark:border-stone-800 shadow-sm dark:shadow-md">
+            <CardHeader className="pb-3 border-b border-stone-100 dark:border-stone-800">
               <div className="flex items-center justify-between">
                 <Badge variant="amber" className="font-mono text-[11px] font-bold uppercase tracking-wider">
                   Calculated Fermentation Target
                 </Badge>
-                <span className="text-xs text-stone-400 font-mono">
+                <span className="text-xs text-stone-500 dark:text-stone-400 font-mono">
                   {currentGuide.approxHours} window
                 </span>
               </div>
@@ -526,32 +526,32 @@ export function CalculatorTab({
 
             <CardContent className="pt-4 space-y-4">
               <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="p-3.5 bg-stone-800/80 rounded-2xl border border-stone-700/60 flex flex-col justify-between">
-                  <div className="text-xs text-stone-400 font-medium mb-1">Target % Rise</div>
-                  <div className="font-mono text-3xl sm:text-4xl font-black text-amber-400 leading-none">
+                <div className="p-3.5 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200 dark:border-stone-700/60 flex flex-col justify-between">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 font-medium mb-1">Target % Rise</div>
+                  <div className="font-mono text-3xl sm:text-4xl font-black text-amber-700 dark:text-amber-400 leading-none">
                     +{currentGuide.targetRise}%
                   </div>
-                  <div className="text-[10px] text-stone-400 mt-2 font-mono">
+                  <div className="text-[10px] text-stone-500 dark:text-stone-400 mt-2 font-mono">
                     At {displayTemp}°{tempUnit} dough temp
                   </div>
                 </div>
 
-                <div className="p-3.5 bg-stone-800/80 rounded-2xl border border-stone-700/60 flex flex-col justify-between">
-                  <div className="text-xs text-stone-400 font-medium mb-1">Cutoff Volume</div>
-                  <div className="font-mono text-3xl sm:text-4xl font-black text-emerald-400 leading-none">
+                <div className="p-3.5 bg-stone-50 dark:bg-stone-800/80 rounded-2xl border border-stone-200 dark:border-stone-700/60 flex flex-col justify-between">
+                  <div className="text-xs text-stone-500 dark:text-stone-400 font-medium mb-1">Cutoff Volume</div>
+                  <div className="font-mono text-3xl sm:text-4xl font-black text-emerald-700 dark:text-emerald-400 leading-none">
                     {targetCalc.rounded}
-                    <span className="text-sm font-normal text-stone-300 ml-1">mL</span>
+                    <span className="text-sm font-normal text-stone-600 dark:text-stone-300 ml-1">mL</span>
                   </div>
-                  <div className="text-[10px] text-stone-400 mt-2 font-mono">
+                  <div className="text-[10px] text-stone-500 dark:text-stone-400 mt-2 font-mono">
                     Exact: {targetCalc.exact} mL
                   </div>
                 </div>
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-                <div className="text-xs text-stone-300 flex items-center gap-1.5">
-                  <Info className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                  <span>Mark container at <strong className="text-white font-mono">{targetCalc.rounded} mL</strong> cutoff</span>
+                <div className="text-xs text-stone-600 dark:text-stone-300 flex items-center gap-1.5">
+                  <Info className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
+                  <span>Mark container at <strong className="text-stone-900 dark:text-white font-mono">{targetCalc.rounded} mL</strong> cutoff</span>
                 </div>
                 
                 {onStartBakeWithValues && (

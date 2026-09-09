@@ -398,7 +398,7 @@ export default function App() {
       {/* Floating Active Bake Pill for Mobile (Solid, dismissible, high-contrast) */}
       {activeSession.status === 'in_progress' && currentTab !== 'tracker' && !isMiniBannerDismissed && (
         <div className="md:hidden fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-30 animate-fade-in">
-          <div className="w-full bg-stone-900/95 dark:bg-stone-900 border border-amber-500/50 text-stone-100 p-2.5 rounded-2xl shadow-2xl flex items-center justify-between gap-2.5 ring-1 ring-black/40 backdrop-blur-md">
+          <div className="w-full bg-white/95 dark:bg-stone-900/95 border border-amber-500/50 text-stone-900 dark:text-stone-100 p-2.5 rounded-2xl shadow-xl flex items-center justify-between gap-2.5 ring-1 ring-stone-200/80 dark:ring-black/40 backdrop-blur-md">
             <button
               type="button"
               onClick={() => setCurrentTab('tracker')}
@@ -406,10 +406,10 @@ export default function App() {
             >
               <Badge variant="emerald" pulseDot className="px-1.5 py-0.5" />
               <div className="truncate">
-                <div className="text-xs font-bold text-white truncate">
+                <div className="text-xs font-bold text-stone-900 dark:text-white truncate">
                   {activeSession.title || 'Country Loaf'}
                 </div>
-                <div className="text-[10px] text-amber-300 font-mono">
+                <div className="text-[10px] text-amber-700 dark:text-amber-300 font-mono">
                   {tempUnit === 'F' ? `${activeSession.endingDoughTemp}°F` : `${fahrenheitToCelsius(activeSession.endingDoughTemp)}°C`} • Target: +{activeSession.targetRisePercent}% ({activeSession.targetVolumeMl} mL)
                 </div>
               </div>
@@ -428,7 +428,7 @@ export default function App() {
                 size="icon-sm"
                 variant="ghost"
                 onClick={() => setIsMiniBannerDismissed(true)}
-                className="w-7 h-7 rounded-full text-stone-400 hover:text-white"
+                className="w-7 h-7 rounded-full text-stone-400 hover:text-stone-700 dark:hover:text-white"
                 aria-label="Dismiss banner"
               >
                 <X className="w-3.5 h-3.5" />
@@ -439,7 +439,7 @@ export default function App() {
       )}
 
       {/* Mobile Sticky Navigation Bottom Dock */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-900/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-800/80 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5 flex items-center justify-around shadow-2xl">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-200/80 dark:border-stone-800/80 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5 flex items-center justify-around shadow-2xl">
         {[
           { id: 'calculator', label: 'Calc', icon: Flame },
           { id: 'ddt', label: 'DDT Water', icon: Waves },
@@ -463,8 +463,8 @@ export default function App() {
               }}
               className={`relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all touch-manipulation min-w-[56px] cursor-pointer ${
                 isSelected
-                  ? 'text-amber-400 bg-amber-500/15 font-bold'
-                  : 'text-stone-400 active:text-stone-200 active:bg-stone-800/50'
+                  ? 'text-amber-700 dark:text-amber-400 bg-amber-500/15 font-bold'
+                  : 'text-stone-500 dark:text-stone-400 active:text-stone-900 dark:active:text-stone-200 active:bg-stone-200/50 dark:active:bg-stone-800/50'
               }`}
             >
               <div className="relative">
@@ -489,24 +489,24 @@ export default function App() {
         <div className="md:hidden fixed inset-0 z-50 flex flex-col justify-end animate-fade-in">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-stone-950/80 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-stone-950/50 dark:bg-stone-950/80 backdrop-blur-xs transition-opacity"
             onClick={() => setIsMoreOpen(false)}
           />
 
           {/* Drawer content */}
-          <div className="relative bg-stone-900 dark:bg-stone-950 border-t border-stone-800 rounded-t-3xl p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+          <div className="relative bg-white dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 rounded-t-3xl p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
             {/* Grab Handle */}
-            <div className="w-12 h-1.5 bg-stone-700 dark:bg-stone-800 rounded-full mx-auto" />
+            <div className="w-12 h-1.5 bg-stone-300 dark:bg-stone-800 rounded-full mx-auto" />
 
-            <div className="flex items-center justify-between pb-2 border-b border-stone-800">
+            <div className="flex items-center justify-between pb-2 border-b border-stone-100 dark:border-stone-800">
               <div className="flex items-center gap-2">
-                <span className="font-serif text-lg font-bold text-amber-100">More Baking Tools</span>
+                <span className="font-serif text-lg font-bold text-stone-900 dark:text-amber-100">More Baking Tools</span>
               </div>
               <Button
                 variant="ghost"
                 size="icon-sm"
                 onClick={() => setIsMoreOpen(false)}
-                className="w-8 h-8 rounded-full bg-stone-800 text-stone-400 hover:text-white"
+                className="w-8 h-8 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -521,20 +521,20 @@ export default function App() {
                 }}
                 className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                   currentTab === 'recipe'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
-                    : 'bg-stone-800/80 dark:bg-stone-900/80 border-stone-700/80 dark:border-stone-800 text-stone-200 active:bg-stone-800'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
+                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
                     <Scale className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-sm text-white">Recipe & Vessel Sizing</div>
-                    <div className="text-xs text-stone-400">Scale loaves & Cambro container sizing</div>
+                    <div className="font-bold text-sm text-stone-900 dark:text-white">Recipe & Vessel Sizing</div>
+                    <div className="text-xs text-stone-500 dark:text-stone-400">Scale loaves & Cambro container sizing</div>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-400" />
+                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
               </button>
 
               <button
@@ -545,20 +545,20 @@ export default function App() {
                 }}
                 className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                   currentTab === 'log'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
-                    : 'bg-stone-800/80 dark:bg-stone-900/80 border-stone-700/80 dark:border-stone-800 text-stone-200 active:bg-stone-800'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
+                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
                     <ScrollText className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-sm text-white">Baker's Notebook & Log</div>
-                    <div className="text-xs text-stone-400">Past bakes, crumb outcomes & calibration</div>
+                    <div className="font-bold text-sm text-stone-900 dark:text-white">Baker's Notebook & Log</div>
+                    <div className="text-xs text-stone-500 dark:text-stone-400">Past bakes, crumb outcomes & calibration</div>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-400" />
+                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
               </button>
 
               <button
@@ -569,32 +569,32 @@ export default function App() {
                 }}
                 className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                   currentTab === 'references'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-white'
-                    : 'bg-stone-800/80 dark:bg-stone-900/80 border-stone-700/80 dark:border-stone-800 text-stone-200 active:bg-stone-800'
+                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
+                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
                     <BookOpen className="w-5 h-5" />
                   </div>
                   <div>
-                    <div className="font-bold text-sm text-white">Guides & Masterclasses</div>
-                    <div className="text-xs text-stone-400">Tom Cucuzza's YouTube videos & research</div>
+                    <div className="font-bold text-sm text-stone-900 dark:text-white">Guides & Masterclasses</div>
+                    <div className="text-xs text-stone-500 dark:text-stone-400">Tom Cucuzza's YouTube videos & research</div>
                   </div>
                 </div>
-                <ChevronRight className="w-4 h-4 text-stone-400" />
+                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
               </button>
             </div>
 
             {/* Quick Theme & Temp Unit in Sheet */}
             <div className="space-y-2 pt-2">
-              <div className="p-3 bg-stone-800/60 dark:bg-stone-900/60 rounded-2xl border border-stone-700/60 dark:border-stone-800 flex items-center justify-between text-xs">
-                <span className="text-stone-300 font-medium">Appearance Theme:</span>
+              <div className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200/80 dark:border-stone-800 flex items-center justify-between text-xs">
+                <span className="text-stone-700 dark:text-stone-300 font-medium">Appearance Theme:</span>
                 <Button
                   size="sm"
                   variant="outline"
                   onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="h-8 gap-1.5 bg-stone-900 border-stone-700 text-xs font-semibold text-amber-300"
+                  className="h-8 gap-1.5 bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-xs font-semibold text-stone-800 dark:text-amber-300"
                 >
                   {theme === 'dark' ? (
                     <>
@@ -603,21 +603,21 @@ export default function App() {
                     </>
                   ) : (
                     <>
-                      <Moon className="w-3.5 h-3.5 text-stone-300" />
+                      <Moon className="w-3.5 h-3.5 text-stone-600" />
                       <span>Light Theme</span>
                     </>
                   )}
                 </Button>
               </div>
 
-              <div className="p-3 bg-stone-800/60 dark:bg-stone-900/60 rounded-2xl border border-stone-700/60 dark:border-stone-800 flex items-center justify-between text-xs">
-                <span className="text-stone-300 font-medium">Temperature Display Unit:</span>
-                <div className="inline-flex rounded-lg p-0.5 bg-stone-900 border border-stone-700">
+              <div className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200/80 dark:border-stone-800 flex items-center justify-between text-xs">
+                <span className="text-stone-700 dark:text-stone-300 font-medium">Temperature Display Unit:</span>
+                <div className="inline-flex rounded-lg p-0.5 bg-stone-200/80 dark:bg-stone-900 border border-stone-300/80 dark:border-stone-700">
                   <button
                     type="button"
                     onClick={() => setTempUnit('F')}
                     className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                      tempUnit === 'F' ? 'bg-amber-500 text-stone-950 shadow-xs' : 'text-stone-400'
+                      tempUnit === 'F' ? 'bg-amber-500 text-stone-950 shadow-xs' : 'text-stone-600 dark:text-stone-400'
                     }`}
                   >
                     °F
@@ -626,7 +626,7 @@ export default function App() {
                     type="button"
                     onClick={() => setTempUnit('C')}
                     className={`px-3 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
-                      tempUnit === 'C' ? 'bg-amber-500 text-stone-950 shadow-xs' : 'text-stone-400'
+                      tempUnit === 'C' ? 'bg-amber-500 text-stone-950 shadow-xs' : 'text-stone-600 dark:text-stone-400'
                     }`}
                   >
                     °C
