@@ -28,16 +28,25 @@ export function formatElapsed(ms: number): string {
 }
 
 /**
- * Milliseconds since a session's "HH:MM" mix time. A bake that started before
- * midnight reports an hour later than noon, so a future timestamp rolls back a
- * day rather than showing negative elapsed time.
+ * Milliseconds since a session's mix time, in 24-hour "HH:MM" or 12-hour
+ * "h:mm AM/PM" form. A bake that started before midnight reports an hour
+ * later than noon, so a future timestamp rolls back a day rather than
+ * showing negative elapsed time.
  */
 export function elapsedSinceClockTime(clockTime: string): number | null {
-  const match = /^(\d{1,2}):(\d{2})$/.exec(typeof clockTime === 'string' ? clockTime.trim() : '');
+  const match = /^(\d{1,2}):(\d{2})(?:\s*([AP])\.?\s*M\.?)?$/i.exec(
+    typeof clockTime === 'string' ? clockTime.trim() : '',
+  );
   if (!match) return null;
-  const hours = Number(match[1]);
   const minutes = Number(match[2]);
-  if (hours > 23 || minutes > 59) return null;
+  if (minutes > 59) return null;
+  let hours = Number(match[1]);
+  if (match[3]) {
+    if (hours < 1 || hours > 12) return null;
+    hours = (hours % 12) + (match[3].toUpperCase() === 'P' ? 12 : 0);
+  } else if (hours > 23) {
+    return null;
+  }
   const now = new Date();
   const startedAt = new Date(now);
   startedAt.setHours(hours, minutes, 0, 0);
