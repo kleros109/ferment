@@ -4,16 +4,35 @@ import { Header } from './components/Header';
 import { CalculatorTab } from './components/CalculatorTab';
 import { DDTCalculator } from './components/DDTCalculator';
 import { ActiveTrackerTab } from './components/ActiveTrackerTab';
+import { NowScreen } from './components/NowScreen';
 import { BulkOMaticTab } from './components/BulkOMaticTab';
 import { RecipeTab } from './components/RecipeTab';
 import { BakersLogTab } from './components/BakersLogTab';
 import { ReferencesTab } from './components/ReferencesTab';
+import { useBakeRuntime } from './hooks/useBakeRuntime';
 import { BakeSession, TempUnit } from './types';
 import { calculateTargetVolume, fahrenheitToCelsius, getGuideForTemperature } from './utils/fermentCalculations';
 import { Button } from './components/ui/button';
 import { Badge } from './components/ui/badge';
 
-const VALID_TABS = ['calculator', 'ddt', 'tracker', 'bulk-o-matic', 'recipe', 'log', 'references'];
+const VALID_TABS = ['calculator', 'ddt', 'tracker', 'bulk-o-matic', 'recipe', 'log', 'references', 'now'];
+
+/** Primary mobile surface: one screen that drives a bake in progress. */
+const NOW_TAB = 'now';
+
+/** Matches the `md:hidden` breakpoint the mobile dock and sheet already use. */
+const MOBILE_VIEWPORT_QUERY = '(max-width: 767px)';
+
+/** Everything behind the single secondary entry point, in mid-bake order of need. */
+const SECONDARY_ENTRIES = [
+  { id: 'tracker', label: 'Full Bake Steps', description: 'The nine-step wizard, fold table and crumb notes', icon: Clock },
+  { id: 'bulk-o-matic', label: 'Readiness Check', description: 'Nine-criteria Bulk-O-Matic and the shaping call', icon: Activity },
+  { id: 'calculator', label: 'Two-Factor Calculator', description: 'Target rise, starting volume and cutoff mark', icon: Flame },
+  { id: 'ddt', label: 'Water Temp (DDT)', description: 'Desired dough temperature water calculator', icon: Waves },
+  { id: 'recipe', label: 'Recipe & Vessel Sizing', description: 'Scale loaves & Cambro container sizing', icon: Scale },
+  { id: 'log', label: "Baker's Notebook & Log", description: 'Past bakes, crumb outcomes & calibration', icon: ScrollText },
+  { id: 'references', label: 'Guides & Masterclasses', description: "Tom Cucuzza's YouTube videos & research", icon: BookOpen },
+];
 
 // Initial sample bake based on Appendix 2 from Tom Cucuzza's guide
 const INITIAL_LOGS: BakeSession[] = [
@@ -99,10 +118,25 @@ const DEFAULT_ACTIVE_SESSION: BakeSession = {
 };
 
 export default function App() {
+  // Declared before the tab below: a mobile launch with a bake in progress
+  // lands on the Now screen rather than the calculator.
+  const [activeSession, setActiveSession] = useState<BakeSession>(() => {
+    try {
+      const saved = localStorage.getItem('ferment_active_session');
+      if (saved) return JSON.parse(saved);
+    } catch {
+      // ignore
+    }
+    return DEFAULT_ACTIVE_SESSION;
+  });
+
   const [currentTab, setCurrentTab] = useState<string>(() => {
     if (typeof window !== 'undefined') {
       const hash = window.location.hash.replace(/^#/, '');
       if (VALID_TABS.includes(hash)) return hash;
+      if (window.matchMedia(MOBILE_VIEWPORT_QUERY).matches && activeSession.status === 'in_progress') {
+        return NOW_TAB;
+      }
     }
     return 'calculator';
   });
@@ -194,16 +228,6 @@ export default function App() {
   }, []);
 
   // Load / save active session and log history from localStorage
-  const [activeSession, setActiveSession] = useState<BakeSession>(() => {
-    try {
-      const saved = localStorage.getItem('ferment_active_session');
-      if (saved) return JSON.parse(saved);
-    } catch {
-      // ignore
-    }
-    return DEFAULT_ACTIVE_SESSION;
-  });
-
   const [logs, setLogs] = useState<BakeSession[]>(() => {
     try {
       const saved = localStorage.getItem('ferment_bake_logs');
@@ -213,6 +237,13 @@ export default function App() {
     }
     return INITIAL_LOGS;
   });
+
+  // Step and interval timer for the bake in progress: deadline-backed, so a
+  // reload, screen lock, or re-open from the home screen keeps both.
+  const runtime = useBakeRuntime(activeSession.id);
+
+  const mobileBakeTab = () =>
+    typeof window !== 'undefined' && window.matchMedia(MOBILE_VIEWPORT_QUERY).matches ? NOW_TAB : 'tracker';
 
   useEffect(() => {
     try {
@@ -260,7 +291,7 @@ export default function App() {
       status: 'in_progress',
     };
     setActiveSession(newSession);
-    setCurrentTab('tracker');
+    setCurrentTab(mobileBakeTab());
   };
 
   // Handler: Export full bake log as JSON download
@@ -330,7 +361,7 @@ export default function App() {
     };
 
     setActiveSession(newSession);
-    setCurrentTab('tracker');
+    setCurrentTab(mobileBakeTab());
   };
 
   // Shared state for Calculator and DDT tabs
@@ -394,11 +425,24 @@ export default function App() {
           </div>
         )}
 
+        {currentTab === 'now' && (
+          <NowScreen
+            session={activeSession}
+            setSession={setActiveSession}
+            tempUnit={tempUnit}
+            runtime={runtime}
+            onSaveToLog={handleSaveToLog}
+            onOpenSteps={() => setCurrentTab('tracker')}
+            onStartNewBake={() => setCurrentTab('calculator')}
+          />
+        )}
+
         {currentTab === 'tracker' && (
           <ActiveTrackerTab
             session={activeSession}
             setSession={setActiveSession}
             tempUnit={tempUnit}
+            runtime={runtime}
             onSaveToLog={handleSaveToLog}
             onOpenBulkOMatic={() => setCurrentTab('bulk-o-matic')}
           />
@@ -421,7 +465,7 @@ export default function App() {
             logs={logs}
             onSelectSessionToEdit={(s) => {
               setActiveSession(s);
-              setCurrentTab('tracker');
+              setCurrentTab(s.status === 'in_progress' ? mobileBakeTab() : 'tracker');
             }}
             onDeleteSession={handleDeleteSession}
             onCalibrateNewBake={handleCalibrateNewBake}
@@ -435,12 +479,12 @@ export default function App() {
       </main>
 
       {/* Floating Active Bake Pill for Mobile (Solid, dismissible, high-contrast) */}
-      {activeSession.status === 'in_progress' && currentTab !== 'tracker' && !isMiniBannerDismissed && (
-        <div className="md:hidden fixed bottom-[calc(4.25rem+env(safe-area-inset-bottom))] left-3 right-3 z-30 animate-fade-in">
+      {activeSession.status === 'in_progress' && currentTab !== 'tracker' && currentTab !== NOW_TAB && !isMiniBannerDismissed && (
+        <div className="md:hidden fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-3 right-3 z-30 animate-fade-in">
           <div className="w-full bg-white/95 dark:bg-stone-900/95 border border-amber-500/50 text-stone-900 dark:text-stone-100 p-2.5 rounded-2xl shadow-xl flex items-center justify-between gap-2.5 ring-1 ring-stone-200/80 dark:ring-black/40 backdrop-blur-md">
             <button
               type="button"
-              onClick={() => setCurrentTab('tracker')}
+              onClick={() => setCurrentTab(NOW_TAB)}
               className="flex-1 flex items-center gap-2.5 min-w-0 text-left touch-manipulation cursor-pointer"
             >
               <Badge variant="emerald" pulseDot className="px-1.5 py-0.5" />
@@ -477,50 +521,40 @@ export default function App() {
         </div>
       )}
 
-      {/* Mobile Sticky Navigation Bottom Dock */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-200/80 dark:border-stone-800/80 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5 flex items-center justify-around shadow-2xl">
-        {[
-          { id: 'calculator', label: 'Calc', icon: Flame },
-          { id: 'ddt', label: 'DDT Water', icon: Waves },
-          { id: 'tracker', label: 'Active Bake', icon: Clock, hasPulse: activeSession.status === 'in_progress' },
-          { id: 'bulk-o-matic', label: 'Bulk Cues', icon: Activity },
-          { id: 'more', label: 'More', icon: MoreHorizontal, isMoreTrigger: true, isActive: ['recipe', 'log', 'references'].includes(currentTab) },
-        ].map((item) => {
-          const Icon = item.icon;
-          const isSelected = item.isMoreTrigger ? item.isActive : currentTab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => {
-                if (item.isMoreTrigger) {
-                  setIsMoreOpen(true);
-                } else {
-                  setCurrentTab(item.id);
-                  setIsMoreOpen(false);
-                }
-              }}
-              className={`relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all touch-manipulation min-w-[56px] cursor-pointer ${
-                isSelected
-                  ? 'text-amber-700 dark:text-amber-400 bg-amber-500/15 font-bold'
-                  : 'text-stone-500 dark:text-stone-400 active:text-stone-900 dark:active:text-stone-200 active:bg-stone-200/50 dark:active:bg-stone-800/50'
-              }`}
-            >
-              <div className="relative">
-                <Icon className={`w-5 h-5 ${isSelected ? 'stroke-[2.5px]' : 'stroke-2'}`} />
-                {item.hasPulse && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                )}
-                {item.isMoreTrigger && item.isActive && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400" />
-                )}
-              </div>
-              <span className={`text-[10px] mt-0.5 tracking-tight ${isSelected ? 'font-bold' : 'font-medium'}`}>
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+      {/* Mobile Sticky Navigation Bottom Dock: one primary bake surface plus one secondary entry point */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-xl border-t border-stone-200/80 dark:border-stone-800/80 px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5 flex items-stretch gap-2 shadow-2xl">
+        <button
+          type="button"
+          onClick={() => {
+            setCurrentTab(NOW_TAB);
+            setIsMoreOpen(false);
+          }}
+          aria-current={currentTab === NOW_TAB ? 'page' : undefined}
+          className={`relative flex-1 h-[52px] rounded-xl flex items-center justify-center gap-2 transition-all touch-manipulation cursor-pointer ${
+            currentTab === NOW_TAB
+              ? 'bg-amber-500 text-stone-950 font-bold shadow-sm'
+              : 'bg-stone-200/60 dark:bg-stone-900 text-stone-600 dark:text-stone-300 active:bg-stone-300/70 dark:active:bg-stone-800'
+          }`}
+        >
+          <Clock className={`w-5 h-5 ${currentTab === NOW_TAB ? 'stroke-[2.5px]' : 'stroke-2'}`} />
+          <span className="text-sm font-bold">Now</span>
+          {activeSession.status === 'in_progress' && (
+            <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          )}
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsMoreOpen(true)}
+          aria-current={currentTab !== NOW_TAB ? 'page' : undefined}
+          className={`relative w-[104px] h-[52px] rounded-xl flex items-center justify-center gap-1.5 transition-all touch-manipulation cursor-pointer ${
+            currentTab !== NOW_TAB
+              ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300 font-bold'
+              : 'bg-stone-200/60 dark:bg-stone-900 text-stone-600 dark:text-stone-300 active:bg-stone-300/70 dark:active:bg-stone-800'
+          }`}
+        >
+          <MoreHorizontal className="w-5 h-5" />
+          <span className="text-sm font-semibold">More</span>
+        </button>
       </div>
 
       {/* Mobile "More" Drawer Bottom Sheet */}
@@ -552,77 +586,36 @@ export default function App() {
             </div>
 
             <div className="space-y-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentTab('recipe');
-                  setIsMoreOpen(false);
-                }}
-                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                  currentTab === 'recipe'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
-                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
-                    <Scale className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-stone-900 dark:text-white">Recipe & Vessel Sizing</div>
-                    <div className="text-xs text-stone-500 dark:text-stone-400">Scale loaves & Cambro container sizing</div>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentTab('log');
-                  setIsMoreOpen(false);
-                }}
-                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                  currentTab === 'log'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
-                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
-                    <ScrollText className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-stone-900 dark:text-white">Baker's Notebook & Log</div>
-                    <div className="text-xs text-stone-500 dark:text-stone-400">Past bakes, crumb outcomes & calibration</div>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentTab('references');
-                  setIsMoreOpen(false);
-                }}
-                className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                  currentTab === 'references'
-                    ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
-                    : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-sm text-stone-900 dark:text-white">Guides & Masterclasses</div>
-                    <div className="text-xs text-stone-500 dark:text-stone-400">Tom Cucuzza's YouTube videos & research</div>
-                  </div>
-                </div>
-                <ChevronRight className="w-4 h-4 text-stone-400 dark:text-stone-500" />
-              </button>
+              {SECONDARY_ENTRIES.map((entry) => {
+                const Icon = entry.icon;
+                const isActive = currentTab === entry.id;
+                return (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => {
+                      setCurrentTab(entry.id);
+                      setIsMoreOpen(false);
+                    }}
+                    className={`w-full p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-500/15 border-amber-500/50 text-amber-950 dark:text-white'
+                        : 'bg-stone-50 dark:bg-stone-900/80 border-stone-200/80 dark:border-stone-800 text-stone-700 dark:text-stone-200 active:bg-stone-100 hover:bg-stone-100 dark:hover:bg-stone-850'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 shrink-0 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
+                        <Icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-sm text-stone-900 dark:text-white">{entry.label}</div>
+                        <div className="text-xs text-stone-500 dark:text-stone-400">{entry.description}</div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 shrink-0 text-stone-400 dark:text-stone-500" />
+                  </button>
+                );
+              })}
             </div>
 
             {/* Quick Theme & Temp Unit in Sheet */}

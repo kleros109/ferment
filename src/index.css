@@ -76,14 +76,19 @@
   }
 }
 
-/* Custom range slider — warm amber thumb, track fill, touch-optimized */
+/* Custom range slider — warm amber thumb, track fill, touch-optimized.
+   The input box is a 44px touch target while the painted track stays 10px:
+   a doughy hand should not have to hit a hairline. */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
-  height: 10px;
+  height: 2.75rem;
   border-radius: 9999px;
   background:
     linear-gradient(to right, var(--color-amber-600) 0%, var(--color-amber-600) var(--fill, 50%), var(--color-stone-200) var(--fill, 50%));
+  background-size: 100% 10px;
+  background-position: center;
+  background-repeat: no-repeat;
   outline-offset: 4px;
   cursor: pointer;
   touch-action: pan-x;
@@ -91,6 +96,9 @@ input[type='range'] {
 .dark input[type='range'] {
   background:
     linear-gradient(to right, var(--color-amber-500) 0%, var(--color-amber-500) var(--fill, 50%), var(--color-stone-800) var(--fill, 50%));
+  background-size: 100% 10px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
