@@ -19,7 +19,20 @@ import { formatDuration } from '../utils/time';
  */
 export const BAKE_RUNTIME_STORAGE_KEY = 'ferment_bake_runtime';
 
-export const TOTAL_STEPS = 9;
+/** The nine-step sequence every bake surface consumes; index + 1 is the step number. */
+export const BAKE_STEPS = [
+  { title: 'Mix & Starting Volume', hint: 'Level the dough, then mark the starting line on the vessel.' },
+  { title: 'Fold Handling Rounds', hint: 'Fold rounds are spaced 30 minutes apart.' },
+  { title: 'Dough Temp & Target Rise', hint: 'Probe the dough centre right after the last fold.' },
+  { title: 'Monitor Volume & Rise', hint: 'Ignore the clock - cut off when the dough reaches the mark.' },
+  { title: 'Divide & Preshape', hint: 'Preshape, rest 25-30 min, then final shape into the banneton.' },
+  { title: 'Final Proof & Cold Retard', hint: 'Shaped dough goes into the fridge. Fermentation finishes here.' },
+  { title: 'Scoring & Baking', hint: 'Bake cold straight from the fridge - do not warm the dough up.' },
+  { title: 'Crumb Assessment', hint: 'Slice through the centre once the loaf has cooled 90 minutes.' },
+  { title: 'Calibration', hint: 'Calibration rule: repeat the bake, change only the percent rise.' },
+] as const;
+
+export const TOTAL_STEPS = BAKE_STEPS.length;
 export const DEFAULT_TIMER_MINUTES = 30;
 export const DEFAULT_TIMER_LABEL = 'Next Stretch & Fold';
 

@@ -1,4 +1,4 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import {
   Minus,
   Plus,
@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 import { BakeSession, BulkFoldRound, TempUnit } from '../types';
 import { calculateTargetVolume, fahrenheitToCelsius, getGuideForTemperature } from '../utils/fermentCalculations';
-import { elapsedSinceClockTime, formatClockTime, formatDuration, formatElapsed } from '../utils/time';
+import { elapsedSinceMix, formatClockTime, formatDuration, formatElapsed } from '../utils/time';
 import { CRUMB_DIAGNOSIS_DATA } from '../data/sourdoughData';
-import { BakeRuntimeController, TOTAL_STEPS } from '../hooks/useBakeRuntime';
+import { BakeRuntimeController, BAKE_STEPS, TOTAL_STEPS } from '../hooks/useBakeRuntime';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
@@ -36,30 +36,6 @@ import { cn } from '../lib/utils';
  * All measurements write straight to the persisted session, so a reload or a
  * re-open from the home screen restores them along with the step and timer.
  */
-
-const STEP_TITLES = [
-  'Mix & Starting Volume',
-  'Fold Handling Rounds',
-  'Dough Temp & Target Rise',
-  'Monitor Volume & Rise',
-  'Divide & Preshape',
-  'Final Proof & Cold Retard',
-  'Scoring & Baking',
-  'Crumb Assessment',
-  'Calibration',
-] as const;
-
-const STEP_HINTS = [
-  'Level the dough, then mark the starting line on the vessel.',
-  'Fold rounds are spaced 30 minutes apart.',
-  'Probe the dough centre right after the last fold.',
-  'Ignore the clock - cut off when the dough reaches the mark.',
-  'Preshape, rest 25-30 min, then final shape into the banneton.',
-  'Shaped dough goes into the fridge. Fermentation finishes here.',
-  'Bake cold straight from the fridge - do not warm the dough up.',
-  'Slice through the centre once the loaf has cooled 90 minutes.',
-  'Calibration rule: repeat the bake, change only the percent rise.',
-] as const;
 
 const VOLUME_STEP_ML = 25;
 const TEMP_MIN_F = 60;
@@ -85,6 +61,17 @@ export function NowScreen({
   onStartNewBake,
 }: NowScreenProps) {
   const [foldType, setFoldType] = useState<BulkFoldRound['type']>('Stretch and Fold');
+  const inProgress = session.status === 'in_progress';
+
+  // The 'since mix' readout is computed from the wall clock at render time,
+  // so it needs its own heartbeat whenever the interval timer is not
+  // providing one.
+  const [, setElapsedTick] = useState(0);
+  useEffect(() => {
+    if (!inProgress || runtime.timerRunning) return;
+    const id = window.setInterval(() => setElapsedTick((t) => t + 1), 1000);
+    return () => window.clearInterval(id);
+  }, [inProgress, runtime.timerRunning]);
 
   const step = runtime.step;
   const startVolumeMl = session.startingVolumeMl;
@@ -174,7 +161,7 @@ export function NowScreen({
     onSaveToLog(completed);
   };
 
-  if (session.status !== 'in_progress') {
+  if (!inProgress) {
     return (
       <div className="max-w-md mx-auto pt-8 px-1 text-center space-y-4">
         <div className="w-14 h-14 mx-auto rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
@@ -213,7 +200,7 @@ export function NowScreen({
                     : 'Save the bake to the notebook';
 
   const elapsedLabel = (() => {
-    const elapsedMs = elapsedSinceClockTime(session.mixTime);
+    const elapsedMs = elapsedSinceMix(session.date, session.mixTime);
     return elapsedMs === null ? null : formatElapsed(elapsedMs);
   })();
 
@@ -228,7 +215,7 @@ export function NowScreen({
             </span>
             <div className="min-w-0">
               <div className="font-serif font-bold text-base leading-tight text-stone-900 dark:text-stone-50 truncate">
-                {STEP_TITLES[step - 1]}
+                {BAKE_STEPS[step - 1].title}
               </div>
               {elapsedLabel && (
                 <div className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
@@ -650,7 +637,7 @@ export function NowScreen({
         )}
       </section>
 
-      <p className="text-[11px] text-stone-500 dark:text-stone-400 px-0.5">{STEP_HINTS[step - 1]}</p>
+      <p className="text-[11px] text-stone-500 dark:text-stone-400 px-0.5">{BAKE_STEPS[step - 1].hint}</p>
 
       {/* Step navigation: every action above stays reachable one-handed */}
       <div className="flex gap-2">

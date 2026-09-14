@@ -20,7 +20,7 @@ import {
   Thermometer
 } from 'lucide-react';
 import { BakeSession, BulkFoldRound, TempUnit } from '../types';
-import { BakeRuntimeController } from '../hooks/useBakeRuntime';
+import { BakeRuntimeController, BAKE_STEPS, TOTAL_STEPS } from '../hooks/useBakeRuntime';
 import {
   fahrenheitToCelsius,
   getGuideForTemperature,
@@ -104,17 +104,7 @@ export function ActiveTrackerTab({
     }));
   };
 
-  const stepsList = [
-    { num: 1, title: 'Mix & Starting Volume', desc: 'Combine ingredients & mark initial line' },
-    { num: 2, title: 'Fold Handling Rounds', desc: 'Stretch & Folds, Coil Folds, and timing' },
-    { num: 3, title: 'Dough Temp & Target Rise', desc: 'Two-factor lookup and vessel cutoff mark' },
-    { num: 4, title: 'Monitor Volume & Rise', desc: 'Check expansion, dome compensation' },
-    { num: 5, title: 'Divide & Preshape', desc: 'Cutoff bulk fermentation, 30m bench rest' },
-    { num: 6, title: 'Final Shape & Cold Retard', desc: '8–16 hours in fridge at ~39°F (4°C)' },
-    { num: 7, title: 'Scoring & Baking', desc: '500°F preheat, 450°F lid on/off' },
-    { num: 8, title: 'Crumb Assessment', desc: 'Inspect fool\'s crumb vs open crumb' },
-    { num: 9, title: 'Calibration for Next Bake', desc: 'Adjust target % rise by ±10%' },
-  ];
+  const stepsList = BAKE_STEPS.map((step, index) => ({ num: index + 1, title: step.title }));
 
   const renderTimerCard = () => (
     <Card className="border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
@@ -261,7 +251,7 @@ export function ActiveTrackerTab({
               type="button"
               variant="amber"
               size="sm"
-              disabled={currentStep >= 9}
+              disabled={currentStep >= TOTAL_STEPS}
               onClick={runtime.nextStep}
               className="text-xs font-bold"
               aria-label="Next Step"
@@ -271,7 +261,7 @@ export function ActiveTrackerTab({
             </Button>
           </div>
           {/* Visual Step Progress Bar */}
-          <Progress value={(currentStep / 9) * 100} className="h-1.5 bg-stone-100 dark:bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
+          <Progress value={(currentStep / TOTAL_STEPS) * 100} className="h-1.5 bg-stone-100 dark:bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
         </div>
 
         {/* Desktop 9-Step Horizontal Progress Ribbon */}
