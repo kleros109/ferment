@@ -32,7 +32,7 @@ export const Slider = React.forwardRef<HTMLInputElement, SliderProps>(
           aria-valuemax={max}
           onChange={(e) => onValueChange?.(Number(e.target.value))}
           style={{ '--fill': `${percentage}%` } as React.CSSProperties}
-          className="w-full h-2.5 rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-11 rounded-full cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed"
           {...props}
         />
       </div>

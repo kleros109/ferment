@@ -1,4 +1,4 @@
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, Dispatch, SetStateAction } from 'react';
 import {
   Play,
   Pause,
@@ -20,6 +20,7 @@ import {
   Thermometer
 } from 'lucide-react';
 import { BakeSession, BulkFoldRound, TempUnit } from '../types';
+import { BakeRuntimeController, BAKE_STEPS, TOTAL_STEPS } from '../hooks/useBakeRuntime';
 import {
   fahrenheitToCelsius,
   getGuideForTemperature,
@@ -38,6 +39,7 @@ interface ActiveTrackerTabProps {
   session: BakeSession;
   setSession: Dispatch<SetStateAction<BakeSession>>;
   tempUnit: TempUnit;
+  runtime: BakeRuntimeController;
   onSaveToLog: (session: BakeSession) => void;
   onOpenBulkOMatic: () => void;
 }
@@ -46,15 +48,15 @@ export function ActiveTrackerTab({
   session,
   setSession,
   tempUnit,
+  runtime,
   onSaveToLog,
   onOpenBulkOMatic,
 }: ActiveTrackerTabProps) {
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  
-  // Fold timer
-  const [timerSeconds, setTimerSeconds] = useState<number>(1800); // 30 min default
-  const [timerRunning, setTimerRunning] = useState<boolean>(false);
-  const [timerType, setTimerType] = useState<string>('Next Stretch & Fold');
+  // Step and interval timer live in the shared bake runtime, not component
+  // state: a reload, screen lock, or re-open from the home screen has to come
+  // back to the same step with the same time left.
+  const currentStep = runtime.step;
+  const setCurrentStep = runtime.setStep;
 
   // Input states for active step adjustments
   const [roundType, setRoundType] = useState<'Stretch and Fold' | 'Coil Fold'>('Stretch and Fold');
@@ -68,31 +70,6 @@ export function ActiveTrackerTab({
   const [domeLow, setDomeLow] = useState<number>(session.domeLowPointMl || 1000);
   const [domeHigh, setDomeHigh] = useState<number>(session.domeHighPointMl || 1200);
   const [showCoolingCurve, setShowCoolingCurve] = useState<boolean>(false);
-
-  // Timer interval
-  useEffect(() => {
-    let interval: any = null;
-    if (timerRunning && timerSeconds > 0) {
-      interval = setInterval(() => {
-        setTimerSeconds((prev) => prev - 1);
-      }, 1000);
-    } else if (timerSeconds === 0 && timerRunning) {
-      setTimerRunning(false);
-    }
-    return () => clearInterval(interval);
-  }, [timerRunning, timerSeconds]);
-
-  const formatTimer = (secs: number) => {
-    const mins = Math.floor(secs / 60);
-    const s = secs % 60;
-    return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const startTimerWithMinutes = (mins: number, label: string) => {
-    setTimerSeconds(mins * 60);
-    setTimerType(label);
-    setTimerRunning(true);
-  };
 
   // Add a fold round to session
   const handleAddFoldRound = () => {
@@ -112,7 +89,7 @@ export function ActiveTrackerTab({
     }));
     setRoundNote('');
     // Start standard 30 min timer for next fold
-    startTimerWithMinutes(30, `Round ${newRound.roundNumber + 1} Fold`);
+    runtime.startTimer(30, `Round ${newRound.roundNumber + 1} Fold`);
   };
 
   // Update target rise based on measured temperature
@@ -127,17 +104,7 @@ export function ActiveTrackerTab({
     }));
   };
 
-  const stepsList = [
-    { num: 1, title: 'Mix & Starting Volume', desc: 'Combine ingredients & mark initial line' },
-    { num: 2, title: 'Fold Handling Rounds', desc: 'Stretch & Folds, Coil Folds, and timing' },
-    { num: 3, title: 'Dough Temp & Target Rise', desc: 'Two-factor lookup and vessel cutoff mark' },
-    { num: 4, title: 'Monitor Volume & Rise', desc: 'Check expansion, dome compensation' },
-    { num: 5, title: 'Divide & Preshape', desc: 'Cutoff bulk fermentation, 30m bench rest' },
-    { num: 6, title: 'Final Shape & Cold Retard', desc: '8–16 hours in fridge at ~39°F (4°C)' },
-    { num: 7, title: 'Scoring & Baking', desc: '500°F preheat, 450°F lid on/off' },
-    { num: 8, title: 'Crumb Assessment', desc: 'Inspect fool\'s crumb vs open crumb' },
-    { num: 9, title: 'Calibration for Next Bake', desc: 'Adjust target % rise by ±10%' },
-  ];
+  const stepsList = BAKE_STEPS.map((step, index) => ({ num: index + 1, title: step.title }));
 
   const renderTimerCard = () => (
     <Card className="border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
@@ -148,36 +115,33 @@ export function ActiveTrackerTab({
             Active Interval Timer
           </span>
           <Badge variant="outline" className="text-[11px] font-mono text-stone-500 dark:text-stone-400 max-w-[150px] truncate">
-            {timerType}
+            {runtime.timerLabel}
           </Badge>
         </div>
       </CardHeader>
 
       <CardContent className="p-4 sm:p-5 pt-0 space-y-3">
         <div className="py-2.5 sm:py-3 text-center bg-amber-50/70 dark:bg-stone-950 rounded-xl text-amber-900 dark:text-amber-400 font-mono text-3xl sm:text-4xl font-extrabold tracking-widest shadow-inner border border-amber-200/80 dark:border-stone-800">
-          {formatTimer(timerSeconds)}
+          {runtime.remainingLabel}
         </div>
 
         <div className="flex gap-2">
           <Button
             type="button"
-            onClick={() => setTimerRunning(!timerRunning)}
-            variant={timerRunning ? 'destructive' : 'emerald'}
+            onClick={runtime.toggleTimer}
+            variant={runtime.timerRunning ? 'destructive' : 'emerald'}
             className="flex-1 text-xs sm:text-sm font-bold shadow-sm"
           >
-            {timerRunning ? <Pause className="w-4 h-4 mr-1.5" /> : <Play className="w-4 h-4 mr-1.5" />}
-            {timerRunning ? 'Pause Timer' : 'Start Timer'}
+            {runtime.timerRunning ? <Pause className="w-4 h-4 mr-1.5" /> : <Play className="w-4 h-4 mr-1.5" />}
+            {runtime.timerRunning ? 'Pause Timer' : 'Start Timer'}
           </Button>
           <Button
             type="button"
             variant="outline"
             size="icon"
-            onClick={() => {
-              setTimerRunning(false);
-              setTimerSeconds(1800);
-            }}
+            onClick={runtime.resetTimer}
             className="shrink-0 text-stone-600 dark:text-stone-300"
-            title="Reset to 30 min"
+            title="Reset interval timer"
           >
             <RotateCcw className="w-4 h-4" />
           </Button>
@@ -188,7 +152,7 @@ export function ActiveTrackerTab({
             type="button"
             variant="secondary"
             size="sm"
-            onClick={() => startTimerWithMinutes(30, 'Stretch & Fold (30m)')}
+            onClick={() => runtime.startTimer(30, 'Stretch & Fold (30m)')}
             className="text-[11px] font-mono px-1 h-8"
           >
             30m Fold
@@ -197,7 +161,7 @@ export function ActiveTrackerTab({
             type="button"
             variant="secondary"
             size="sm"
-            onClick={() => startTimerWithMinutes(25, 'Bench Rest (25m)')}
+            onClick={() => runtime.startTimer(25, 'Bench Rest (25m)')}
             className="text-[11px] font-mono px-1 h-8"
           >
             25m Rest
@@ -206,7 +170,7 @@ export function ActiveTrackerTab({
             type="button"
             variant="secondary"
             size="sm"
-            onClick={() => startTimerWithMinutes(20, 'Bake Steam (20m)')}
+            onClick={() => runtime.startTimer(20, 'Bake Steam (20m)')}
             className="text-[11px] font-mono px-1 h-8"
           >
             20m Steam
@@ -262,7 +226,7 @@ export function ActiveTrackerTab({
               variant="secondary"
               size="sm"
               disabled={currentStep <= 1}
-              onClick={() => setCurrentStep((prev) => Math.max(1, prev - 1))}
+              onClick={runtime.prevStep}
               className="text-xs font-semibold"
               aria-label="Previous Step"
             >
@@ -287,8 +251,8 @@ export function ActiveTrackerTab({
               type="button"
               variant="amber"
               size="sm"
-              disabled={currentStep >= 9}
-              onClick={() => setCurrentStep((prev) => Math.min(9, prev + 1))}
+              disabled={currentStep >= TOTAL_STEPS}
+              onClick={runtime.nextStep}
               className="text-xs font-bold"
               aria-label="Next Step"
             >
@@ -297,7 +261,7 @@ export function ActiveTrackerTab({
             </Button>
           </div>
           {/* Visual Step Progress Bar */}
-          <Progress value={(currentStep / 9) * 100} className="h-1.5 bg-stone-100 dark:bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
+          <Progress value={(currentStep / TOTAL_STEPS) * 100} className="h-1.5 bg-stone-100 dark:bg-stone-800" indicatorClassName="bg-gradient-to-r from-amber-500 to-emerald-400" />
         </div>
 
         {/* Desktop 9-Step Horizontal Progress Ribbon */}
@@ -873,7 +837,7 @@ export function ActiveTrackerTab({
                     type="button"
                     variant="amber"
                     size="sm"
-                    onClick={() => startTimerWithMinutes(30, 'Bench Rest')}
+                    onClick={() => runtime.startTimer(30, 'Bench Rest')}
                     className="font-semibold"
                   >
                     Start 30m Timer
@@ -1043,7 +1007,7 @@ export function ActiveTrackerTab({
                     <Button
                       type="button"
                       variant="default"
-                      onClick={() => startTimerWithMinutes(20, 'Bake: Lid On (Steam)')}
+                      onClick={() => runtime.startTimer(20, 'Bake: Lid On (Steam)')}
                       className="text-xs font-semibold"
                     >
                       Start 20m Lid On
@@ -1051,7 +1015,7 @@ export function ActiveTrackerTab({
                     <Button
                       type="button"
                       variant="amber"
-                      onClick={() => startTimerWithMinutes(20, 'Bake: Lid Off (Crust)')}
+                      onClick={() => runtime.startTimer(20, 'Bake: Lid Off (Crust)')}
                       className="text-xs font-semibold"
                     >
                       Start 20m Lid Off
@@ -1059,7 +1023,7 @@ export function ActiveTrackerTab({
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => startTimerWithMinutes(90, 'Cooling Time (Do Not Slice)')}
+                      onClick={() => runtime.startTimer(90, 'Cooling Time (Do Not Slice)')}
                       className="text-xs font-semibold"
                     >
                       Start 90m Cool Down

@@ -67,7 +67,7 @@ export function Header({
               <Badge
                 variant="emerald"
                 pulseDot
-                onClick={() => setCurrentTab('tracker')}
+                onClick={() => setCurrentTab('now')}
                 className="flex md:hidden cursor-pointer active:scale-95 transition-transform text-[11px] py-1 px-2.5"
               >
                 Live Bake

@@ -1,7 +1,11 @@
 // Ferment service worker: offline-first app shell cache.
 // Strategy: cache-first for precached app shell + icons; network-first for
 // navigations (so deploys arrive) with cache fallback for offline use.
-const CACHE_NAME = 'ferment-v1';
+//
+// Bump CACHE_NAME whenever the app shell changes: the module bundle is served
+// cache-first under this name, so an installed home-screen app would otherwise
+// keep the previous shell after an update.
+const CACHE_NAME = 'ferment-v2';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
